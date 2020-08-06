@@ -45,8 +45,8 @@ Creating a command with drink is simple.  You can put a command in any class.  Y
 Simply annotate a method with `@Command`:
 
 ```java
-import com.jonahseguin.drink.annotation.Command;
-import com.jonahseguin.drink.annotation.Sender;
+import Command;
+import Sender;
 import org.bukkit.command.CommandSender;
 
 public class ExampleCommand {
@@ -141,9 +141,9 @@ All providers must extend the ` DrinkProvider<T>` class.
 An example provider:
 
 ```java
-import com.jonahseguin.drink.argument.CommandArg;
-import com.jonahseguin.drink.exception.CommandExitMessage;
-import com.jonahseguin.drink.parametric.DrinkProvider;
+import CommandArg;
+import CommandExitMessage;
+import DrinkProvider;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
