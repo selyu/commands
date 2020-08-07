@@ -2,6 +2,7 @@ package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
 import org.selyu.commands.api.exception.CommandExitMessage;
+import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.api.parametric.CommandProvider;
 
 import javax.annotation.Nonnull;
@@ -10,9 +11,12 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
-public class LongProvider extends CommandProvider<Long> {
+public final class LongProvider extends CommandProvider<Long> {
+    private final Lang lang;
 
-    public static final LongProvider INSTANCE = new LongProvider();
+    public LongProvider(@Nonnull Lang lang) {
+        this.lang = lang;
+    }
 
     @Override
     public boolean doesConsumeArgument() {
@@ -40,9 +44,8 @@ public class LongProvider extends CommandProvider<Long> {
         String s = arg.get();
         try {
             return Long.parseLong(s);
-        }
-        catch (NumberFormatException ex) {
-            throw new CommandExitMessage("Required: Long Number, Given: '" + s + "'");
+        } catch (NumberFormatException ex) {
+            throw new CommandExitMessage(lang.get(Lang.Type.INVALID_LONG, s));
         }
     }
 

@@ -2,6 +2,7 @@ package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
 import org.selyu.commands.api.exception.CommandExitMessage;
+import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.api.parametric.CommandProvider;
 
 import javax.annotation.Nonnull;
@@ -10,9 +11,12 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
-public class IntegerProvider extends CommandProvider<Integer> {
+public final class IntegerProvider extends CommandProvider<Integer> {
+    private final Lang lang;
 
-    public static final IntegerProvider INSTANCE = new IntegerProvider();
+    public IntegerProvider(@Nonnull Lang lang) {
+        this.lang = lang;
+    }
 
     @Override
     public boolean doesConsumeArgument() {
@@ -41,9 +45,8 @@ public class IntegerProvider extends CommandProvider<Integer> {
         String s = arg.get();
         try {
             return Integer.parseInt(s);
-        }
-        catch (NumberFormatException ex) {
-            throw new CommandExitMessage("Required: Integer, Given: '" + s + "'");
+        } catch (NumberFormatException ex) {
+            throw new CommandExitMessage(lang.get(Lang.Type.INVALID_INTEGER, s));
         }
     }
 

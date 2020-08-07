@@ -3,6 +3,7 @@ package org.selyu.commands.api.lang;
 import com.google.common.base.Preconditions;
 
 import javax.annotation.Nonnull;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,9 +17,16 @@ public class Lang {
     }
 
     @Nonnull
-    public String get(@Nonnull Type type) {
+    public String get(@Nonnull Type type, @Nonnull Object... arguments) {
         Preconditions.checkNotNull(type, "Type cannot be null");
-        return messages.get(type);
+        String message = messages.get(type);
+        if (message == null) {
+            return "";
+        }
+        if (arguments.length == 0) {
+            return message;
+        }
+        return new MessageFormat(message).format(arguments);
     }
 
     public void set(@Nonnull Type type, @Nonnull String message) {
@@ -32,7 +40,13 @@ public class Lang {
         UNKNOWN_SUB_COMMAND("Unknown sub-command: {0}.  Use '/{1} help' to see available commands."),
         PLEASE_CHOOSE_SUB_COMMAND("Please choose a sub-command.  Use '/{0} help' to see available commands."),
 
-        ;
+        INVALID_BOOLEAN("Required: Boolean (true/false), Given: ''{0}''"),
+        INVALID_DOUBLE("Required: Decimal Number, Given: ''{0}''"),
+        INVALID_INTEGER("Required: Integer, Given: ''{0}''"),
+        INVALID_LONG("Required: Long Number, Given: ''{0}''"),
+        INVALID_ENUM_VALUE("No matching value found for ''{0}''. Available values: {1}"),
+        INVALID_DURATION("Duration must be in format hh:mm or hh:mm:ss or 1h2m3s"),
+        INVALID_DATE("Date must be in format: ''{0}''");
 
         private final String defaultMessage;
 

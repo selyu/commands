@@ -1,7 +1,7 @@
 package org.selyu.commands.api.provider;
 
-import org.selyu.commands.api.argument.CommandArgs;
 import org.selyu.commands.api.argument.CommandArg;
+import org.selyu.commands.api.argument.CommandArgs;
 import org.selyu.commands.api.parametric.CommandProvider;
 
 import javax.annotation.Nonnull;
@@ -10,10 +10,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandArgsProvider extends CommandProvider<CommandArgs> {
-
-    public static final CommandArgsProvider INSTANCE = new CommandArgsProvider();
-
+public final class CommandArgsProvider extends CommandProvider<CommandArgs> {
     @Override
     public boolean doesConsumeArgument() {
         return false;

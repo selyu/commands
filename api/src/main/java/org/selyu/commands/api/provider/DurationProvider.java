@@ -1,8 +1,9 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import org.selyu.commands.api.parametric.CommandProvider;
 import org.selyu.commands.api.exception.CommandExitMessage;
+import org.selyu.commands.api.lang.Lang;
+import org.selyu.commands.api.parametric.CommandProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -11,9 +12,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class DurationProvider extends CommandProvider<Date> {
+public final class DurationProvider extends CommandProvider<Date> {
+    private final Lang lang;
 
-    public static final DurationProvider INSTANCE = new DurationProvider();
+    public DurationProvider(@Nonnull Lang lang) {
+        this.lang = lang;
+    }
 
     @Override
     public boolean doesConsumeArgument() {
@@ -34,10 +38,10 @@ public class DurationProvider extends CommandProvider<Date> {
             if (l != -1) {
                 return new Date(l);
             } else {
-                throw new CommandExitMessage("Duration must be in format hh:mm or hh:mm:ss or 1h2m3s");
+                throw new CommandExitMessage(lang.get(Lang.Type.INVALID_DURATION));
             }
         } catch (Exception ex) {
-            throw new CommandExitMessage("Duration must be in format hh:mm or hh:mm:ss or 1h2m3s");
+            throw new CommandExitMessage(lang.get(Lang.Type.INVALID_DURATION));
         }
     }
 

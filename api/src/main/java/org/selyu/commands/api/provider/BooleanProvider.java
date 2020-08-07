@@ -2,8 +2,9 @@ package org.selyu.commands.api.provider;
 
 import com.google.common.collect.ImmutableList;
 import org.selyu.commands.api.argument.CommandArg;
-import org.selyu.commands.api.parametric.CommandProvider;
 import org.selyu.commands.api.exception.CommandExitMessage;
+import org.selyu.commands.api.lang.Lang;
+import org.selyu.commands.api.parametric.CommandProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,12 +13,14 @@ import java.util.Collections;
 import java.util.List;
 
 public class BooleanProvider extends CommandProvider<Boolean> {
-
-    public static final BooleanProvider INSTANCE = new BooleanProvider();
-
+    private final Lang lang;
     private static final List<String> SUGGEST = ImmutableList.of("true", "false");
     private static final List<String> SUGGEST_TRUE = ImmutableList.of("true");
     private static final List<String> SUGGEST_FALSE = ImmutableList.of("false");
+
+    public BooleanProvider(@Nonnull Lang lang) {
+        this.lang = lang;
+    }
 
     @Override
     public boolean doesConsumeArgument() {
@@ -48,9 +51,8 @@ public class BooleanProvider extends CommandProvider<Boolean> {
         }
         try {
             return Boolean.parseBoolean(s);
-        }
-        catch (NumberFormatException ex) {
-            throw new CommandExitMessage("Required: Boolean (true/false), Given: '" + s + "'");
+        } catch (NumberFormatException ex) {
+            throw new CommandExitMessage(lang.get(Lang.Type.INVALID_BOOLEAN, s));
         }
     }
 
@@ -67,11 +69,9 @@ public class BooleanProvider extends CommandProvider<Boolean> {
         }
         if ("true".startsWith(prefix)) {
             return SUGGEST_TRUE;
-        }
-        else if ("false".startsWith(prefix)) {
+        } else if ("false".startsWith(prefix)) {
             return SUGGEST_FALSE;
-        }
-        else {
+        } else {
             return Collections.emptyList();
         }
     }

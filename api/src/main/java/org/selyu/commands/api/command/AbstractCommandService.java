@@ -37,37 +37,38 @@ import java.util.concurrent.ConcurrentMap;
 public abstract class AbstractCommandService<T extends CommandContainer> implements ICommandService {
     public static String DEFAULT_KEY = "COMMANDS_DEFAULT";
 
-    protected final CommandExtractor extractor;
-    protected final HelpService helpService;
-    protected final ProviderAssigner providerAssigner;
-    protected final ArgumentParser argumentParser;
-    protected final ModifierService modifierService;
+    protected final CommandExtractor extractor = new CommandExtractor(this);
+    protected final HelpService helpService = new HelpService(this);
+    protected final ProviderAssigner providerAssigner = new ProviderAssigner(this);
+    protected final ArgumentParser argumentParser = new ArgumentParser(this);
+    protected final ModifierService modifierService = new ModifierService();
     protected final ConcurrentMap<String, T> commands = new ConcurrentHashMap<>();
     protected final ConcurrentMap<Class<?>, BindingContainer<?>> bindings = new ConcurrentHashMap<>();
     protected final Lang lang = new Lang();
-    protected IAuthorizer authorizer;
+    protected IAuthorizer authorizer = getDefaultAuthorizer();
 
     public AbstractCommandService() {
-        this.extractor = new CommandExtractor(this);
-        this.helpService = new HelpService(this);
-        this.providerAssigner = new ProviderAssigner(this);
-        this.argumentParser = new ArgumentParser(this);
-        this.modifierService = new ModifierService();
-        authorizer = getDefaultAuthorizer();
+        BooleanProvider booleanProvider = new BooleanProvider(lang);
+        bind(Boolean.class).toProvider(booleanProvider);
+        bind(boolean.class).toProvider(booleanProvider);
 
-        bind(Boolean.class).toProvider(BooleanProvider.INSTANCE);
-        bind(boolean.class).toProvider(BooleanProvider.INSTANCE);
-        bind(Double.class).toProvider(DoubleProvider.INSTANCE);
-        bind(double.class).toProvider(DoubleProvider.INSTANCE);
-        bind(Integer.class).toProvider(IntegerProvider.INSTANCE);
-        bind(int.class).toProvider(IntegerProvider.INSTANCE);
-        bind(Long.class).toProvider(LongProvider.INSTANCE);
-        bind(long.class).toProvider(LongProvider.INSTANCE);
-        bind(String.class).toProvider(StringProvider.INSTANCE);
-        bind(String.class).annotatedWith(Text.class).toProvider(TextProvider.INSTANCE);
-        bind(Date.class).toProvider(DateProvider.INSTANCE);
-        bind(Date.class).annotatedWith(Duration.class).toProvider(DurationProvider.INSTANCE);
-        bind(CommandArgs.class).toProvider(CommandArgsProvider.INSTANCE);
+        DoubleProvider doubleProvider = new DoubleProvider(lang);
+        bind(Double.class).toProvider(doubleProvider);
+        bind(double.class).toProvider(doubleProvider);
+
+        IntegerProvider integerProvider = new IntegerProvider(lang);
+        bind(Integer.class).toProvider(integerProvider);
+        bind(int.class).toProvider(integerProvider);
+
+        LongProvider longProvider = new LongProvider(lang);
+        bind(Long.class).toProvider(longProvider);
+        bind(long.class).toProvider(longProvider);
+
+        bind(String.class).toProvider(new StringProvider());
+        bind(String.class).annotatedWith(Text.class).toProvider(new TextProvider());
+        bind(Date.class).toProvider(new DateProvider(lang));
+        bind(Date.class).annotatedWith(Duration.class).toProvider(new DurationProvider(lang));
+        bind(CommandArgs.class).toProvider(new CommandArgsProvider());
 
         bindDefaults();
     }
@@ -147,12 +148,12 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
                         helpService.sendHelpFor(sender, container);
                         return true;
                     }
-                    sender.sendMessage(lang.get(Lang.Type.UNKNOWN_SUB_COMMAND));
+                    sender.sendMessage(lang.get(Lang.Type.UNKNOWN_SUB_COMMAND, args[0], label));
                 } else {
                     if (container.isDefaultCommandIsHelp()) {
                         helpService.sendHelpFor(sender, container);
                     } else {
-                        sender.sendMessage(lang.get(Lang.Type.PLEASE_CHOOSE_SUB_COMMAND));
+                        sender.sendMessage(lang.get(Lang.Type.PLEASE_CHOOSE_SUB_COMMAND, label));
                     }
                 }
             }

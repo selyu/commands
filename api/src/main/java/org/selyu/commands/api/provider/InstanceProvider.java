@@ -8,7 +8,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
-public class InstanceProvider<T> extends CommandProvider<T> {
+public final class InstanceProvider<T> extends CommandProvider<T> {
 
     private final T instance;
 

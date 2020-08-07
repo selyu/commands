@@ -1,8 +1,9 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import org.selyu.commands.api.parametric.CommandProvider;
 import org.selyu.commands.api.exception.CommandExitMessage;
+import org.selyu.commands.api.lang.Lang;
+import org.selyu.commands.api.parametric.CommandProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -11,8 +12,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class DoubleProvider extends CommandProvider<Double> {
+    private final Lang lang;
 
-    public static final DoubleProvider INSTANCE = new DoubleProvider();
+    public DoubleProvider(@Nonnull Lang lang) {
+        this.lang = lang;
+    }
 
     @Override
     public boolean doesConsumeArgument() {
@@ -40,9 +44,8 @@ public class DoubleProvider extends CommandProvider<Double> {
         String s = arg.get();
         try {
             return Double.parseDouble(s);
-        }
-        catch (NumberFormatException ex) {
-            throw new CommandExitMessage("Required: Decimal Number, Given: '" + s + "'");
+        } catch (NumberFormatException ex) {
+            throw new CommandExitMessage(lang.get(Lang.Type.INVALID_DOUBLE, s));
         }
     }
 

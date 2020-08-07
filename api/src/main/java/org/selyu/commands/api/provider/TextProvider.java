@@ -9,10 +9,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
-public class TextProvider extends CommandProvider<String> {
-
-    public static final TextProvider INSTANCE = new TextProvider();
-
+public final class TextProvider extends CommandProvider<String> {
     @Override
     public boolean doesConsumeArgument() {
         return true;

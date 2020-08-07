@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.selyu.commands.api.argument.CommandArg;
 import org.selyu.commands.api.exception.CommandExitMessage;
+import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.api.parametric.CommandProvider;
 
 import javax.annotation.Nonnull;
@@ -11,12 +12,14 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class EnumProvider<T extends Enum<T>> extends CommandProvider<T> {
-
+public final class EnumProvider<T extends Enum<T>> extends CommandProvider<T> {
     private static final Pattern NON_ALPHANUMERIC = Pattern.compile("[^A-Za-z0-9]");
+
+    private final Lang lang;
     private final Class<T> enumClass;
 
-    public EnumProvider(Class<T> enumClass) {
+    public EnumProvider(@Nonnull Lang lang, @Nonnull Class<T> enumClass) {
+        this.lang = lang;
         this.enumClass = enumClass;
     }
 
@@ -40,7 +43,7 @@ public class EnumProvider<T extends Enum<T>> extends CommandProvider<T> {
                 return entry;
             }
         }
-        throw new CommandExitMessage("No matching value found for " + argumentDescription() + ".  Available values: " + StringUtils.join(getSuggestions(""), ' '));
+        throw new CommandExitMessage(lang.get(Lang.Type.INVALID_ENUM_VALUE, argumentDescription(), StringUtils.join(getSuggestions(""), ' ')));
     }
 
     @Override
