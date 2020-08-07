@@ -13,6 +13,7 @@ import org.selyu.commands.api.exception.*;
 import org.selyu.commands.api.flag.CommandFlag;
 import org.selyu.commands.api.flag.FlagExtractor;
 import org.selyu.commands.api.help.HelpService;
+import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.api.modifier.ICommandModifier;
 import org.selyu.commands.api.modifier.ModifierService;
 import org.selyu.commands.api.parametric.BindingContainer;
@@ -43,6 +44,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     protected final ModifierService modifierService;
     protected final ConcurrentMap<String, T> commands = new ConcurrentHashMap<>();
     protected final ConcurrentMap<Class<?>, BindingContainer<?>> bindings = new ConcurrentHashMap<>();
+    protected final Lang lang = new Lang();
     protected IAuthorizer authorizer;
 
     public AbstractCommandService() {
@@ -145,18 +147,18 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
                         helpService.sendHelpFor(sender, container);
                         return true;
                     }
-                    sender.sendMessage("Unknown sub-command: " + args[0] + ".  Use '/" + label + " help' for available commands.");
+                    sender.sendMessage(lang.get(Lang.Type.UNKNOWN_SUB_COMMAND));
                 } else {
                     if (container.isDefaultCommandIsHelp()) {
                         helpService.sendHelpFor(sender, container);
                     } else {
-                        sender.sendMessage("Please choose a sub-command.  Use '/" + label + " help' for available commands.");
+                        sender.sendMessage(lang.get(Lang.Type.PLEASE_CHOOSE_SUB_COMMAND));
                     }
                 }
             }
             return true;
         } catch (Exception ex) {
-            sender.sendMessage("An exception occurred while performing this command.");
+            sender.sendMessage(lang.get(Lang.Type.EXCEPTION));
             ex.printStackTrace();
         }
 
@@ -192,7 +194,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
             try {
                 command.getMethod().invoke(command.getHandler(), parsedArguments);
             } catch (IllegalAccessException | InvocationTargetException ex) {
-                sender.sendMessage("Could not perform command.  Notify an administrator");
+                sender.sendMessage(lang.get(Lang.Type.EXCEPTION));
                 throw new CommandException("Failed to execute command '" + command.getName() + "' with arguments '" + StringUtils.join(Arrays.asList(args), ' ') + " for sender " + sender.getName(), ex);
             }
         } catch (CommandExitMessage ex) {
