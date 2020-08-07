@@ -1,10 +1,10 @@
 package org.selyu.commands.api.provider;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.selyu.commands.api.argument.CommandArg;
 import org.selyu.commands.api.exception.CommandExitMessage;
 import org.selyu.commands.api.parametric.CommandProvider;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
