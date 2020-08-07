@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Lang {
-    private final Map<Type, String> messages = new HashMap<>();
+    protected final Map<? super Enum<?>, String> messages = new HashMap<>();
 
     public Lang() {
         for (Type value : Type.values()) {

@@ -10,6 +10,7 @@ import org.selyu.commands.api.command.AbstractCommandService;
 import org.selyu.commands.api.command.WrappedCommand;
 import org.selyu.commands.spigot.authorizer.SpigotAuthorizer;
 import org.selyu.commands.spigot.container.SpigotCommandContainer;
+import org.selyu.commands.spigot.lang.SpigotLang;
 import org.selyu.commands.spigot.provider.CommandSenderProvider;
 import org.selyu.commands.spigot.provider.ConsoleCommandSenderProvider;
 import org.selyu.commands.spigot.provider.PlayerProvider;
@@ -21,14 +22,12 @@ import java.util.Map;
 import java.util.Set;
 
 public final class SpigotCommandService extends AbstractCommandService<SpigotCommandContainer> {
-    // TODO: Add a way for each command service to customize messages
-
     private final JavaPlugin plugin;
-    private final SpigotCommandRegistry registry;
+    private final SpigotCommandRegistry registry = new SpigotCommandRegistry(this);
+    private final SpigotLang spigotLang = new SpigotLang();
 
     public SpigotCommandService(@Nonnull JavaPlugin plugin) {
         this.plugin = plugin;
-        registry = new SpigotCommandRegistry(this);
     }
 
     @Override
@@ -39,10 +38,10 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
     @Override
     protected void bindDefaults() {
         bind(CommandSender.class).annotatedWith(Sender.class).toProvider(new CommandSenderProvider());
-        bind(Player.class).annotatedWith(Sender.class).toProvider(new PlayerSenderProvider());
-        bind(ConsoleCommandSender.class).annotatedWith(Sender.class).toProvider(new ConsoleCommandSenderProvider());
+        bind(Player.class).annotatedWith(Sender.class).toProvider(new PlayerSenderProvider(this));
+        bind(ConsoleCommandSender.class).annotatedWith(Sender.class).toProvider(new ConsoleCommandSenderProvider(this));
 
-        bind(Player.class).toProvider(new PlayerProvider());
+        bind(Player.class).toProvider(new PlayerProvider(this));
     }
 
     @Override
@@ -61,6 +60,11 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
         for (SpigotCommandContainer value : commands.values()) {
             registry.register(value, true);
         }
+    }
+
+    @Override
+    public SpigotLang getLang() {
+        return spigotLang;
     }
 
     @Nonnull
