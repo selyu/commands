@@ -126,8 +126,45 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
         modifierService.registerModifier(annotation, type, modifier);
     }
 
+    public boolean executeCommand(@Nonnull ICommandSender<?> sender, @Nonnull T container, @Nonnull String label, @Nonnull String[] args) {
+        try {
+            Map.Entry<WrappedCommand, String[]> data = container.getCommand(args);
+            if (data != null && data.getKey() != null) {
+                if (args.length > 0) {
+                    if (args[args.length - 1].equalsIgnoreCase("help") && !data.getKey().getName().equalsIgnoreCase("help")) {
+                        // Send help if they ask for it, if they registered a custom help sub-command, allow that to override our help menu
+                        helpService.sendHelpFor(sender, container);
+                        return true;
+                    }
+                }
+                checkAuthorization(sender, data.getKey(), label, data.getValue());
+            } else {
+                if (args.length > 0) {
+                    if (args[args.length - 1].equalsIgnoreCase("help")) {
+                        // Send help if they ask for it, if they registered a custom help sub-command, allow that to override our help menu
+                        helpService.sendHelpFor(sender, container);
+                        return true;
+                    }
+                    sender.sendMessage("Unknown sub-command: " + args[0] + ".  Use '/" + label + " help' for available commands.");
+                } else {
+                    if (container.isDefaultCommandIsHelp()) {
+                        helpService.sendHelpFor(sender, container);
+                    } else {
+                        sender.sendMessage("Please choose a sub-command.  Use '/" + label + " help' for available commands.");
+                    }
+                }
+            }
+            return true;
+        } catch (Exception ex) {
+            sender.sendMessage("An exception occurred while performing this command.");
+            ex.printStackTrace();
+        }
+
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
-    public void executeCommand(@Nonnull ICommandSender<?> sender, @Nonnull WrappedCommand command, @Nonnull String label, @Nonnull String[] args) {
+    public void checkAuthorization(@Nonnull ICommandSender<?> sender, @Nonnull WrappedCommand command, @Nonnull String label, @Nonnull String[] args) {
         Preconditions.checkNotNull(sender, "Sender cannot be null");
         Preconditions.checkNotNull(command, "Command cannot be null");
         Preconditions.checkNotNull(label, "Label cannot be null");
