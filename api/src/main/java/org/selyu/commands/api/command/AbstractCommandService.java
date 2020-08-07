@@ -10,7 +10,6 @@ import org.selyu.commands.api.argument.ArgumentParser;
 import org.selyu.commands.api.argument.CommandArgs;
 import org.selyu.commands.api.authorizer.IAuthorizer;
 import org.selyu.commands.api.exception.*;
-import org.selyu.commands.api.factory.ICommandContainerFactory;
 import org.selyu.commands.api.flag.CommandFlag;
 import org.selyu.commands.api.flag.FlagExtractor;
 import org.selyu.commands.api.help.HelpService;
@@ -44,11 +43,9 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     protected final ModifierService modifierService;
     protected final ConcurrentMap<String, T> commands = new ConcurrentHashMap<>();
     protected final ConcurrentMap<Class<?>, BindingContainer<?>> bindings = new ConcurrentHashMap<>();
-    protected final ICommandContainerFactory<T> commandContainerFactory;
     protected IAuthorizer authorizer;
 
-    public AbstractCommandService(@Nonnull ICommandContainerFactory<T> commandContainerFactory) {
-        this.commandContainerFactory = commandContainerFactory;
+    public AbstractCommandService() {
         this.extractor = new CommandExtractor(this);
         this.helpService = new HelpService(this);
         this.providerAssigner = new ProviderAssigner(this);
@@ -79,6 +76,9 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
     protected abstract IAuthorizer<?> getDefaultAuthorizer();
 
+    @Nonnull
+    protected abstract T createContainer(@Nonnull AbstractCommandService<?> commandService, @Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands);
+
     @Override
     public void setAuthorizer(@Nonnull IAuthorizer<?> authorizer) {
         Preconditions.checkNotNull(authorizer, "Authorizer cannot be null");
@@ -100,7 +100,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
             if (extractCommands.isEmpty()) {
                 throw new CommandRegistrationException("There were no commands to register in the " + handler.getClass().getSimpleName() + " class (" + extractCommands.size() + ")");
             }
-            T container = commandContainerFactory.create(this, handler, name, aliasesSet, extractCommands);
+            T container = createContainer(this, handler, name, aliasesSet, extractCommands);
             commands.put(getCommandKey(name), container);
             return container;
         } catch (MissingProviderException | CommandStructureException ex) {

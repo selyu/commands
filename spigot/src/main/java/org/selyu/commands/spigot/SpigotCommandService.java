@@ -1,32 +1,32 @@
 package org.selyu.commands.spigot;
 
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.selyu.commands.api.annotation.Sender;
 import org.selyu.commands.api.authorizer.IAuthorizer;
 import org.selyu.commands.api.command.AbstractCommandService;
+import org.selyu.commands.api.command.WrappedCommand;
 import org.selyu.commands.spigot.authorizer.SpigotAuthorizer;
 import org.selyu.commands.spigot.container.SpigotCommandContainer;
-import org.selyu.commands.spigot.factory.SpigotCommandContainerFactory;
 import org.selyu.commands.spigot.provider.CommandSenderProvider;
 import org.selyu.commands.spigot.provider.ConsoleCommandSenderProvider;
 import org.selyu.commands.spigot.provider.PlayerProvider;
 import org.selyu.commands.spigot.provider.PlayerSenderProvider;
 import org.selyu.commands.spigot.registry.SpigotCommandRegistry;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
+import java.util.Set;
 
 public final class SpigotCommandService extends AbstractCommandService<SpigotCommandContainer> {
     // TODO: Add a way for each command service to customize messages
-    
+
     private final JavaPlugin plugin;
     private final SpigotCommandRegistry registry;
 
     public SpigotCommandService(@Nonnull JavaPlugin plugin) {
-        super(new SpigotCommandContainerFactory());
-
         this.plugin = plugin;
         registry = new SpigotCommandRegistry(this);
     }
@@ -48,6 +48,12 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
     @Override
     protected IAuthorizer<?> getDefaultAuthorizer() {
         return new SpigotAuthorizer();
+    }
+
+    @Nonnull
+    @Override
+    public SpigotCommandContainer createContainer(@Nonnull AbstractCommandService<?> commandService, @Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands) {
+        return new SpigotCommandContainer(commandService, object, name, aliases, commands);
     }
 
     @Override
