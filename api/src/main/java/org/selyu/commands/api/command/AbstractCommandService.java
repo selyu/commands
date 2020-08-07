@@ -80,13 +80,13 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     protected abstract T createContainer(@Nonnull AbstractCommandService<?> commandService, @Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands);
 
     @Override
-    public void setAuthorizer(@Nonnull IAuthorizer<?> authorizer) {
+    public final void setAuthorizer(@Nonnull IAuthorizer<?> authorizer) {
         Preconditions.checkNotNull(authorizer, "Authorizer cannot be null");
         this.authorizer = authorizer;
     }
 
     @Override
-    public CommandContainer register(@Nonnull Object handler, @Nonnull String name, @Nullable String... aliases) throws CommandRegistrationException {
+    public final CommandContainer register(@Nonnull Object handler, @Nonnull String name, @Nullable String... aliases) throws CommandRegistrationException {
         Preconditions.checkNotNull(handler, "Handler object cannot be null");
         Preconditions.checkNotNull(name, "Name cannot be null");
         Preconditions.checkState(name.length() > 0, "Name cannot be empty (must be > 0 characters in length)");
@@ -109,7 +109,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     }
 
     @Override
-    public CommandContainer registerSub(@Nonnull CommandContainer root, @Nonnull Object handler) {
+    public final CommandContainer registerSub(@Nonnull CommandContainer root, @Nonnull Object handler) {
         Preconditions.checkNotNull(root, "Root command container cannot be null");
         Preconditions.checkNotNull(handler, "Handler object cannot be null");
         try {
@@ -122,11 +122,11 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     }
 
     @Override
-    public <TT> void registerModifier(@Nonnull Class<? extends Annotation> annotation, @Nonnull Class<TT> type, @Nonnull ICommandModifier<TT> modifier) {
+    public final <TT> void registerModifier(@Nonnull Class<? extends Annotation> annotation, @Nonnull Class<TT> type, @Nonnull ICommandModifier<TT> modifier) {
         modifierService.registerModifier(annotation, type, modifier);
     }
 
-    public boolean executeCommand(@Nonnull ICommandSender<?> sender, @Nonnull T container, @Nonnull String label, @Nonnull String[] args) {
+    public final boolean executeCommand(@Nonnull ICommandSender<?> sender, @Nonnull T container, @Nonnull String label, @Nonnull String[] args) {
         try {
             Map.Entry<WrappedCommand, String[]> data = container.getCommand(args);
             if (data != null && data.getKey() != null) {
@@ -164,7 +164,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     }
 
     @SuppressWarnings("unchecked")
-    public void checkAuthorization(@Nonnull ICommandSender<?> sender, @Nonnull WrappedCommand command, @Nonnull String label, @Nonnull String[] args) {
+    private void checkAuthorization(@Nonnull ICommandSender<?> sender, @Nonnull WrappedCommand command, @Nonnull String label, @Nonnull String[] args) {
         Preconditions.checkNotNull(sender, "Sender cannot be null");
         Preconditions.checkNotNull(command, "Command cannot be null");
         Preconditions.checkNotNull(label, "Label cannot be null");
@@ -204,7 +204,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     }
 
     @Nullable
-    public CommandContainer getContainerFor(@Nonnull WrappedCommand command) {
+    public final CommandContainer getContainerFor(@Nonnull WrappedCommand command) {
         Preconditions.checkNotNull(command, "WrappedCommand cannot be null");
         for (CommandContainer container : commands.values()) {
             if (container.getCommands().containsValue(command)) {
@@ -216,7 +216,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
     @SuppressWarnings("unchecked")
     @Nullable
-    public <TT> BindingContainer<TT> getBindingsFor(@Nonnull Class<TT> type) {
+    public final <TT> BindingContainer<TT> getBindingsFor(@Nonnull Class<TT> type) {
         Preconditions.checkNotNull(type, "Type cannot be null");
         if (bindings.containsKey(type)) {
             return (BindingContainer<TT>) bindings.get(type);
@@ -226,12 +226,12 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
     @Nullable
     @Override
-    public CommandContainer get(@Nonnull String name) {
+    public final CommandContainer get(@Nonnull String name) {
         Preconditions.checkNotNull(name, "Name cannot be null");
         return commands.get(getCommandKey(name));
     }
 
-    public String getCommandKey(@Nonnull String name) {
+    public final String getCommandKey(@Nonnull String name) {
         Preconditions.checkNotNull(name, "Name cannot be null");
         if (name.length() == 0) {
             return DEFAULT_KEY;
@@ -240,12 +240,12 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     }
 
     @Override
-    public <TT> CommandBinder<TT> bind(@Nonnull Class<TT> type) {
+    public final <TT> CommandBinder<TT> bind(@Nonnull Class<TT> type) {
         Preconditions.checkNotNull(type, "Type cannot be null for bind");
         return new CommandBinder<>(this, type);
     }
 
-    public <TT> void bindProvider(@Nonnull Class<TT> type, @Nonnull Set<Class<? extends Annotation>> annotations, @Nonnull CommandProvider<TT> provider) {
+    public final <TT> void bindProvider(@Nonnull Class<TT> type, @Nonnull Set<Class<? extends Annotation>> annotations, @Nonnull CommandProvider<TT> provider) {
         Preconditions.checkNotNull(type, "Type cannot be null");
         Preconditions.checkNotNull(annotations, "Annotations cannot be null");
         Preconditions.checkNotNull(provider, "Provider cannot be null");
