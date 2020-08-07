@@ -21,6 +21,7 @@ public final class WrappedCommand {
     private final String permission;
     private final Object handler;
     private final Method method;
+    private final boolean async;
     private final CommandParameters parameters;
     private final CommandProvider<?>[] providers;
     private final CommandProvider<?>[] consumingProviders;
@@ -29,7 +30,7 @@ public final class WrappedCommand {
     private final boolean requiresAsync;
     private final String generatedUsage;
 
-    public WrappedCommand(AbstractCommandService<?> commandService, String name, Set<String> aliases, String description, String usage, String permission, Object handler, Method method) throws MissingProviderException, CommandStructureException {
+    public WrappedCommand(AbstractCommandService<?> commandService, String name, Set<String> aliases, String description, String usage, String permission, Object handler, Method method, boolean async) throws MissingProviderException, CommandStructureException {
         this.commandService = commandService;
         this.name = name;
         this.aliases = aliases;
@@ -38,6 +39,7 @@ public final class WrappedCommand {
         this.permission = permission;
         this.handler = handler;
         this.method = method;
+        this.async = async;
         this.parameters = new CommandParameters(method);
         this.providers = commandService.getProviderAssigner().assignProvidersFor(this);
         this.consumingArgCount = calculateConsumingArgCount();
@@ -100,6 +102,10 @@ public final class WrappedCommand {
     }
 
     private boolean calculateRequiresAsync() {
+        if(async) {
+            return true;
+        }
+
         for (CommandProvider<?> provider : providers) {
             if (provider.isAsync()) {
                 return true;

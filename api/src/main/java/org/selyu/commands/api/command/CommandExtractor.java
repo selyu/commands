@@ -51,7 +51,7 @@ public final class CommandExtractor {
             }
             WrappedCommand wrappedCommand = new WrappedCommand(
                     commandService, command.name(), Sets.newHashSet(command.aliases()), command.desc(), command.usage(),
-                    perm, handler, method
+                    perm, handler, method, command.async()
             );
             return Optional.of(wrappedCommand);
         }

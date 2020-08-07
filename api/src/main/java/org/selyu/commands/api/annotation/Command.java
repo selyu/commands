@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Command {
-
     String name();
 
     String[] aliases() default {};
@@ -17,4 +16,5 @@ public @interface Command {
 
     String usage() default "";
 
+    boolean async() default false;
 }
