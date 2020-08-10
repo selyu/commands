@@ -1,11 +1,11 @@
 package org.selyu.commands.api.modifier;
 
-import com.google.common.base.Preconditions;
 import org.selyu.commands.api.annotation.Classifier;
 import org.selyu.commands.api.annotation.Modifier;
 import org.selyu.commands.api.command.CommandExecution;
 import org.selyu.commands.api.exception.CommandExitMessage;
 import org.selyu.commands.api.parametric.CommandParameter;
+import org.selyu.commands.api.util.CommandUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,8 +21,8 @@ public class ModifierService {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Nullable
     public Object executeModifiers(@Nonnull CommandExecution execution, @Nonnull CommandParameter param, @Nullable Object parsedArgument) throws CommandExitMessage {
-        Preconditions.checkNotNull(execution, "CommandExecution cannot be null");
-        Preconditions.checkNotNull(param, "CommandParameter cannot be null");
+        CommandUtil.checkNotNull(execution, "CommandExecution cannot be null");
+        CommandUtil.checkNotNull(param, "CommandParameter cannot be null");
         for (Annotation annotation : param.getModifierAnnotations()) {
             ModifierContainer container = getModifiers(annotation.annotationType());
             if (container != null) {
@@ -35,17 +35,17 @@ public class ModifierService {
     }
 
     public <T> void registerModifier(@Nonnull Class<? extends Annotation> annotation, @Nonnull Class<T> type, @Nonnull ICommandModifier<T> modifier) {
-        Preconditions.checkNotNull(annotation, "Annotation cannot be null");
-        Preconditions.checkNotNull(type, "Type cannot be null");
-        Preconditions.checkNotNull(modifier, "Modifier cannot be null");
+        CommandUtil.checkNotNull(annotation, "Annotation cannot be null");
+        CommandUtil.checkNotNull(type, "Type cannot be null");
+        CommandUtil.checkNotNull(modifier, "Modifier cannot be null");
         modifiers.computeIfAbsent(annotation, a -> new ModifierContainer()).getModifiers().computeIfAbsent(type, t -> new HashSet<>()).add(modifier);
     }
 
     @Nullable
     public ModifierContainer getModifiers(@Nonnull Class<? extends Annotation> annotation) {
-        Preconditions.checkNotNull(annotation, "Annotation cannot be null");
-        Preconditions.checkState(isModifier(annotation), "Annotation provided is not a modifier (annotate with @Modifier) for getModifier: " + annotation.getSimpleName());
-        Preconditions.checkState(!isClassifier(annotation), "Annotation provided cannot be an @Classifier and an @Modifier: " + annotation.getSimpleName());
+        CommandUtil.checkNotNull(annotation, "Annotation cannot be null");
+        CommandUtil.checkState(isModifier(annotation), "Annotation provided is not a modifier (annotate with @Modifier) for getModifier: " + annotation.getSimpleName());
+        CommandUtil.checkState(!isClassifier(annotation), "Annotation provided cannot be an @Classifier and an @Modifier: " + annotation.getSimpleName());
         if (modifiers.containsKey(annotation)) {
             return modifiers.get(annotation);
         }

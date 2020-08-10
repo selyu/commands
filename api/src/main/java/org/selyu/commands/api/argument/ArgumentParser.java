@@ -1,6 +1,5 @@
 package org.selyu.commands.api.argument;
 
-import com.google.common.base.Preconditions;
 import org.selyu.commands.api.annotation.Flag;
 import org.selyu.commands.api.command.CommandExecution;
 import org.selyu.commands.api.flag.CommandFlag;
@@ -10,6 +9,7 @@ import org.selyu.commands.api.exception.CommandArgumentException;
 import org.selyu.commands.api.exception.CommandExitMessage;
 import org.selyu.commands.api.parametric.CommandParameter;
 import org.selyu.commands.api.parametric.CommandProvider;
+import org.selyu.commands.api.util.CommandUtil;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -60,8 +60,8 @@ public final class ArgumentParser {
 
     @Nonnull
     public Object[] parseArguments(@Nonnull CommandExecution execution, @Nonnull WrappedCommand command, @Nonnull CommandArgs args) throws CommandExitMessage, CommandArgumentException {
-        Preconditions.checkNotNull(command, "WrappedCommand cannot be null");
-        Preconditions.checkNotNull(args, "CommandArgs cannot be null");
+        CommandUtil.checkNotNull(command, "WrappedCommand cannot be null");
+        CommandUtil.checkNotNull(args, "CommandArgs cannot be null");
         Object[] arguments = new Object[command.getMethod().getParameterCount()];
         for (int i = 0; i < command.getParameters().getParameters().length; i++) {
             CommandParameter param = command.getParameters().getParameters()[i];

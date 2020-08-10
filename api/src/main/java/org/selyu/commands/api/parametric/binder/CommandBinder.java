@@ -1,9 +1,9 @@
 package org.selyu.commands.api.parametric.binder;
 
-import com.google.common.base.Preconditions;
 import org.selyu.commands.api.command.AbstractCommandService;
 import org.selyu.commands.api.parametric.CommandProvider;
 import org.selyu.commands.api.provider.InstanceProvider;
+import org.selyu.commands.api.util.CommandUtil;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
@@ -22,19 +22,19 @@ public class CommandBinder<T> {
     }
 
     public CommandBinder<T> annotatedWith(@Nonnull Class<? extends Annotation> annotation) {
-        Preconditions.checkState(commandService.getModifierService().isClassifier(annotation), "Annotation " + annotation.getSimpleName() + " must have @Classifer to be bound");
+        CommandUtil.checkState(commandService.getModifierService().isClassifier(annotation), "Annotation " + annotation.getSimpleName() + " must have @Classifer to be bound");
         classifiers.add(annotation);
         return this;
     }
 
     public void toInstance(@Nonnull T instance) {
-        Preconditions.checkNotNull(instance, "Instance cannot be null for toInstance during binding for " + type.getSimpleName());
+        CommandUtil.checkNotNull(instance, "Instance cannot be null for toInstance during binding for " + type.getSimpleName());
         this.provider = new InstanceProvider<>(instance);
         finish();
     }
 
     public void toProvider(@Nonnull CommandProvider<T> provider) {
-        Preconditions.checkNotNull(provider, "Provider cannot be null for toProvider during binding for " + type.getSimpleName());
+        CommandUtil.checkNotNull(provider, "Provider cannot be null for toProvider during binding for " + type.getSimpleName());
         this.provider = provider;
         finish();
     }

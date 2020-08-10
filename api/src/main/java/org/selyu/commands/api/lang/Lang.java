@@ -1,6 +1,6 @@
 package org.selyu.commands.api.lang;
 
-import com.google.common.base.Preconditions;
+import org.selyu.commands.api.util.CommandUtil;
 
 import javax.annotation.Nonnull;
 import java.text.MessageFormat;
@@ -18,7 +18,7 @@ public class Lang {
 
     @Nonnull
     public String get(@Nonnull Type type, @Nonnull Object... arguments) {
-        Preconditions.checkNotNull(type, "Type cannot be null");
+        CommandUtil.checkNotNull(type, "Type cannot be null");
         String message = messages.get(type);
         if (message == null) {
             return "";
@@ -30,8 +30,8 @@ public class Lang {
     }
 
     public void set(@Nonnull Type type, @Nonnull String message) {
-        Preconditions.checkNotNull(type, "Type cannot be null");
-        Preconditions.checkNotNull(message, "Message cannot be null");
+        CommandUtil.checkNotNull(type, "Type cannot be null");
+        CommandUtil.checkNotNull(message, "Message cannot be null");
         messages.put(type, message);
     }
 
