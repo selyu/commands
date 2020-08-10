@@ -14,6 +14,7 @@ import org.selyu.commands.api.exception.*;
 import org.selyu.commands.api.flag.CommandFlag;
 import org.selyu.commands.api.flag.FlagExtractor;
 import org.selyu.commands.api.help.HelpService;
+import org.selyu.commands.api.help.IHelpFormatter;
 import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.api.modifier.ICommandModifier;
 import org.selyu.commands.api.modifier.ModifierService;
@@ -85,6 +86,12 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     public final void setAuthorizer(@Nonnull IAuthorizer<?> authorizer) {
         Preconditions.checkNotNull(authorizer, "Authorizer cannot be null");
         this.authorizer = authorizer;
+    }
+
+    @Override
+    public void setHelpFormatter(@Nonnull IHelpFormatter helpFormatter) {
+        Preconditions.checkNotNull(authorizer, "HelpFormatter cannot be null");
+        helpService.setHelpFormatter(helpFormatter);
     }
 
     @Override

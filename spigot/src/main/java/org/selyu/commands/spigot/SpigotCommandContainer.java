@@ -1,4 +1,4 @@
-package org.selyu.commands.spigot.container;
+package org.selyu.commands.spigot;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -8,8 +8,6 @@ import org.bukkit.plugin.Plugin;
 import org.selyu.commands.api.command.AbstractCommandService;
 import org.selyu.commands.api.command.CommandContainer;
 import org.selyu.commands.api.command.WrappedCommand;
-import org.selyu.commands.spigot.SpigotCommandService;
-import org.selyu.commands.spigot.sender.SpigotCommandSender;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -17,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public final class SpigotCommandContainer extends CommandContainer {
-    public SpigotCommandContainer(AbstractCommandService<?> commandService, Object object, String name, Set<String> aliases, Map<String, WrappedCommand> commands) {
+final class SpigotCommandContainer extends CommandContainer {
+    SpigotCommandContainer(AbstractCommandService<?> commandService, Object object, String name, Set<String> aliases, Map<String, WrappedCommand> commands) {
         super(commandService, object, name, aliases, commands);
     }
 

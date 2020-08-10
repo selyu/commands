@@ -7,13 +7,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.selyu.commands.api.annotation.Sender;
 import org.selyu.commands.api.command.AbstractCommandService;
 import org.selyu.commands.api.command.WrappedCommand;
-import org.selyu.commands.spigot.container.SpigotCommandContainer;
 import org.selyu.commands.spigot.lang.SpigotLang;
 import org.selyu.commands.spigot.provider.CommandSenderProvider;
 import org.selyu.commands.spigot.provider.ConsoleCommandSenderProvider;
 import org.selyu.commands.spigot.provider.PlayerProvider;
 import org.selyu.commands.spigot.provider.PlayerSenderProvider;
-import org.selyu.commands.spigot.registry.SpigotCommandRegistry;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -61,7 +59,7 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
     }
 
     @Nonnull
-    public JavaPlugin getPlugin() {
+    JavaPlugin getPlugin() {
         return plugin;
     }
 }
