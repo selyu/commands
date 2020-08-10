@@ -2,7 +2,6 @@ package org.selyu.commands.api.command;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 import org.selyu.commands.api.ICommandService;
 import org.selyu.commands.api.annotation.Duration;
 import org.selyu.commands.api.annotation.Text;
@@ -25,6 +24,7 @@ import org.selyu.commands.api.parametric.ProviderAssigner;
 import org.selyu.commands.api.parametric.binder.CommandBinder;
 import org.selyu.commands.api.provider.*;
 import org.selyu.commands.api.sender.ICommandSender;
+import org.selyu.commands.api.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -202,7 +202,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
                 command.getMethod().invoke(command.getHandler(), parsedArguments);
             } catch (IllegalAccessException | InvocationTargetException ex) {
                 sender.sendMessage(lang.get(Lang.Type.EXCEPTION));
-                throw new CommandException("Failed to execute command '" + command.getName() + "' with arguments '" + StringUtils.join(Arrays.asList(args), ' ') + " for sender " + sender.getName(), ex);
+                throw new CommandException("Failed to execute command '" + command.getName() + "' with arguments '" + StringUtils.join(args, ' ') + " for sender " + sender.getName(), ex);
             }
         } catch (CommandExitMessage ex) {
             sender.sendMessage(ex.getMessage());

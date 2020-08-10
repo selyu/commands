@@ -1,8 +1,8 @@
 package org.selyu.commands.api.command;
 
 import com.google.common.base.Preconditions;
-import org.apache.commons.lang3.StringUtils;
 import org.selyu.commands.api.tab.TabCompleter;
+import org.selyu.commands.api.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -89,7 +89,7 @@ public abstract class CommandContainer {
     @Nullable
     public Map.Entry<WrappedCommand, String[]> getCommand(String[] args) {
         for (int i = (args.length - 1); i >= 0; i--) {
-            String key = commandService.getCommandKey(StringUtils.join(Arrays.asList(Arrays.copyOfRange(args, 0, i + 1)), ' '));
+            String key = commandService.getCommandKey(StringUtils.join(Arrays.copyOfRange(args, 0, i + 1), ' '));
             WrappedCommand wrappedCommand = getByKeyOrAlias(key);
             if (wrappedCommand != null) {
                 return new AbstractMap.SimpleEntry<>(wrappedCommand, Arrays.copyOfRange(args, i + 1, args.length));
