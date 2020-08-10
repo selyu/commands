@@ -5,10 +5,8 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.selyu.commands.api.annotation.Sender;
-import org.selyu.commands.api.authorizer.IAuthorizer;
 import org.selyu.commands.api.command.AbstractCommandService;
 import org.selyu.commands.api.command.WrappedCommand;
-import org.selyu.commands.spigot.authorizer.SpigotAuthorizer;
 import org.selyu.commands.spigot.container.SpigotCommandContainer;
 import org.selyu.commands.spigot.lang.SpigotLang;
 import org.selyu.commands.spigot.provider.CommandSenderProvider;
@@ -44,14 +42,9 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
         bind(Player.class).toProvider(new PlayerProvider(this));
     }
 
-    @Override
-    protected IAuthorizer<?> getDefaultAuthorizer() {
-        return new SpigotAuthorizer();
-    }
-
     @Nonnull
     @Override
-    public SpigotCommandContainer createContainer(@Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands) {
+    protected SpigotCommandContainer createContainer(@Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands) {
         return new SpigotCommandContainer(this, object, name, aliases, commands);
     }
 

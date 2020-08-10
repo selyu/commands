@@ -9,6 +9,7 @@ import org.selyu.commands.api.annotation.Text;
 import org.selyu.commands.api.argument.ArgumentParser;
 import org.selyu.commands.api.argument.CommandArgs;
 import org.selyu.commands.api.authorizer.IAuthorizer;
+import org.selyu.commands.api.authorizer.impl.AuthorizerImpl;
 import org.selyu.commands.api.exception.*;
 import org.selyu.commands.api.flag.CommandFlag;
 import org.selyu.commands.api.flag.FlagExtractor;
@@ -45,7 +46,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     protected final ConcurrentMap<String, T> commands = new ConcurrentHashMap<>();
     protected final ConcurrentMap<Class<?>, BindingContainer<?>> bindings = new ConcurrentHashMap<>();
     protected final Lang lang = new Lang();
-    protected IAuthorizer authorizer = getDefaultAuthorizer();
+    protected IAuthorizer authorizer = new AuthorizerImpl(lang);
 
     public AbstractCommandService() {
         BooleanProvider booleanProvider = new BooleanProvider(lang);
@@ -76,8 +77,6 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     protected abstract void runAsync(@Nonnull Runnable runnable);
 
     protected abstract void bindDefaults();
-
-    protected abstract IAuthorizer<?> getDefaultAuthorizer();
 
     @Nonnull
     protected abstract T createContainer(@Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands);

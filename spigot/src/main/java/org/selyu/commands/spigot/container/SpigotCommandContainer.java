@@ -2,7 +2,6 @@ package org.selyu.commands.spigot.container;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.plugin.Plugin;
@@ -10,7 +9,7 @@ import org.selyu.commands.api.command.AbstractCommandService;
 import org.selyu.commands.api.command.CommandContainer;
 import org.selyu.commands.api.command.WrappedCommand;
 import org.selyu.commands.spigot.SpigotCommandService;
-import org.selyu.commands.spigot.executor.SpigotCommandExecutor;
+import org.selyu.commands.spigot.sender.SpigotCommandSender;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -25,12 +24,10 @@ public final class SpigotCommandContainer extends CommandContainer {
 
     public final class SpigotCommand extends Command implements PluginIdentifiableCommand {
         private final SpigotCommandService commandService;
-        private final CommandExecutor commandExecutor;
 
         public SpigotCommand(@Nonnull SpigotCommandService commandService) {
             super(name, "", "/" + name, new ArrayList<>(aliases));
             this.commandService = commandService;
-            commandExecutor = new SpigotCommandExecutor(commandService, SpigotCommandContainer.this);
             if (defaultCommand != null) {
                 setUsage("/" + name + " " + defaultCommand.getGeneratedUsage());
                 setDescription(defaultCommand.getDescription());
@@ -40,7 +37,11 @@ public final class SpigotCommandContainer extends CommandContainer {
 
         @Override
         public boolean execute(CommandSender commandSender, String s, String[] strings) {
-            return commandExecutor.onCommand(commandSender, this, s, strings);
+            if (getName().equalsIgnoreCase(SpigotCommandContainer.this.getName())) {
+                SpigotCommandSender spigotCommandSender = new SpigotCommandSender(commandSender);
+                return commandService.executeCommand(spigotCommandSender, SpigotCommandContainer.this, s, strings);
+            }
+            return false;
         }
 
         @Override
