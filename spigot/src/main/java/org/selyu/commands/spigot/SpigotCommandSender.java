@@ -1,14 +1,14 @@
-package org.selyu.commands.spigot.sender;
+package org.selyu.commands.spigot;
 
 import org.bukkit.command.CommandSender;
 import org.selyu.commands.api.sender.ICommandSender;
 
 import javax.annotation.Nonnull;
 
-public final class SpigotCommandSender implements ICommandSender<CommandSender> {
+final class SpigotCommandSender implements ICommandSender<CommandSender> {
     private final CommandSender commandSender;
 
-    public SpigotCommandSender(@Nonnull CommandSender commandSender) {
+    SpigotCommandSender(@Nonnull CommandSender commandSender) {
         this.commandSender = commandSender;
     }
 

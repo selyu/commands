@@ -19,7 +19,7 @@ public final class HelpService {
             sender.sendMessage("--------------------------------");
             sender.sendMessage("Help - " + container.getName());
             for (WrappedCommand c : container.getCommands().values()) {
-                sender.sendMessage("/" + container.getName() + (c.getName().length() > 0 ? " " + c.getName() : "") + " " + c.getMostApplicableUsage() + " - " + c.getShortDescription());
+                sender.sendMessage(container.getName() + (c.getName().length() > 0 ? " " + c.getName() : "") + " " + c.getMostApplicableUsage() + " - " + c.getShortDescription());
             }
             sender.sendMessage("--------------------------------");
         };

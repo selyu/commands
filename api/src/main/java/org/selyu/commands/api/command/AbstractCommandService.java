@@ -9,10 +9,12 @@ import org.selyu.commands.api.annotation.Text;
 import org.selyu.commands.api.argument.ArgumentParser;
 import org.selyu.commands.api.argument.CommandArgs;
 import org.selyu.commands.api.authorizer.IAuthorizer;
+import org.selyu.commands.api.authorizer.impl.AuthorizerImpl;
 import org.selyu.commands.api.exception.*;
 import org.selyu.commands.api.flag.CommandFlag;
 import org.selyu.commands.api.flag.FlagExtractor;
 import org.selyu.commands.api.help.HelpService;
+import org.selyu.commands.api.help.IHelpFormatter;
 import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.api.modifier.ICommandModifier;
 import org.selyu.commands.api.modifier.ModifierService;
@@ -45,7 +47,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     protected final ConcurrentMap<String, T> commands = new ConcurrentHashMap<>();
     protected final ConcurrentMap<Class<?>, BindingContainer<?>> bindings = new ConcurrentHashMap<>();
     protected final Lang lang = new Lang();
-    protected IAuthorizer authorizer = getDefaultAuthorizer();
+    protected IAuthorizer authorizer = new AuthorizerImpl(lang);
 
     public AbstractCommandService() {
         BooleanProvider booleanProvider = new BooleanProvider(lang);
@@ -77,15 +79,19 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
     protected abstract void bindDefaults();
 
-    protected abstract IAuthorizer<?> getDefaultAuthorizer();
-
     @Nonnull
-    protected abstract T createContainer(@Nonnull AbstractCommandService<?> commandService, @Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands);
+    protected abstract T createContainer(@Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands);
 
     @Override
     public final void setAuthorizer(@Nonnull IAuthorizer<?> authorizer) {
         Preconditions.checkNotNull(authorizer, "Authorizer cannot be null");
         this.authorizer = authorizer;
+    }
+
+    @Override
+    public void setHelpFormatter(@Nonnull IHelpFormatter helpFormatter) {
+        Preconditions.checkNotNull(authorizer, "HelpFormatter cannot be null");
+        helpService.setHelpFormatter(helpFormatter);
     }
 
     @Override
@@ -103,7 +109,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
             if (extractCommands.isEmpty()) {
                 throw new CommandRegistrationException("There were no commands to register in the " + handler.getClass().getSimpleName() + " class (" + extractCommands.size() + ")");
             }
-            T container = createContainer(this, handler, name, aliasesSet, extractCommands);
+            T container = createContainer(handler, name, aliasesSet, extractCommands);
             commands.put(getCommandKey(name), container);
             return container;
         } catch (MissingProviderException | CommandStructureException ex) {

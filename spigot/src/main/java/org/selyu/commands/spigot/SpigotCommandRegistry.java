@@ -1,23 +1,20 @@
-package org.selyu.commands.spigot.registry;
+package org.selyu.commands.spigot;
 
-import org.selyu.commands.api.exception.CommandRegistrationException;
-import org.selyu.commands.api.registry.ICommandRegistry;
-import org.selyu.commands.spigot.SpigotCommandService;
-import org.selyu.commands.spigot.container.SpigotCommandContainer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
+import org.selyu.commands.api.exception.CommandRegistrationException;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class SpigotCommandRegistry implements ICommandRegistry<SpigotCommandContainer> {
+final class SpigotCommandRegistry {
     private final SpigotCommandService commandService;
     private CommandMap commandMap;
 
-    public SpigotCommandRegistry(SpigotCommandService commandService) {
+    SpigotCommandRegistry(SpigotCommandService commandService) {
         this.commandService = commandService;
         try {
             commandMap = (CommandMap) getPrivateField(Bukkit.getServer(), "commandMap", false);
@@ -53,8 +50,7 @@ public final class SpigotCommandRegistry implements ICommandRegistry<SpigotComma
         return result;
     }
 
-    @Override
-    public boolean register(@Nonnull SpigotCommandContainer container, boolean unregisterExisting) throws CommandRegistrationException {
+    public void register(@Nonnull SpigotCommandContainer container, boolean unregisterExisting) throws CommandRegistrationException {
         if (unregisterExisting) {
             try {
                 Map<String, Command> knownCommands = getKnownCommands();
@@ -71,6 +67,6 @@ public final class SpigotCommandRegistry implements ICommandRegistry<SpigotComma
             }
         }
 
-        return commandMap.register(commandService.getPlugin().getName(), container.new SpigotCommand(commandService));
+        commandMap.register(commandService.getPlugin().getName(), container.new SpigotCommand(commandService));
     }
 }
