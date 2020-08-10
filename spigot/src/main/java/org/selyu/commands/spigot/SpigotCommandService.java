@@ -54,6 +54,7 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
     }
 
     @Override
+    @Nonnull
     public SpigotLang getLang() {
         return spigotLang;
     }
