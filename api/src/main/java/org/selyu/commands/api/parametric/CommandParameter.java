@@ -1,12 +1,13 @@
 package org.selyu.commands.api.parametric;
 
-import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import org.selyu.commands.api.annotation.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -22,7 +23,7 @@ public class CommandParameter {
     public CommandParameter(Class<?> type, Parameter parameter, Annotation[] allAnnotations) {
         this.type = type;
         this.parameter = parameter;
-        this.allAnnotations = ImmutableList.copyOf(allAnnotations);
+        this.allAnnotations = Collections.unmodifiableList(Arrays.asList(allAnnotations));
         this.classifierAnnotations = loadClassifiers();
         this.modifierAnnotations = loadModifiers();
         this.flag = loadFlag();
@@ -69,7 +70,7 @@ public class CommandParameter {
                 classifiers.add(annotation);
             }
         }
-        return ImmutableList.copyOf(classifiers);
+        return Collections.unmodifiableList(classifiers);
     }
 
     private List<Annotation> loadModifiers() {
@@ -79,6 +80,6 @@ public class CommandParameter {
                 modifiers.add(annotation);
             }
         }
-        return ImmutableList.copyOf(modifiers);
+        return Collections.unmodifiableList(modifiers);
     }
 }

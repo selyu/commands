@@ -1,10 +1,10 @@
 package org.selyu.commands.api.argument;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.selyu.commands.api.command.AbstractCommandService;
 import org.selyu.commands.api.flag.CommandFlag;
 import org.selyu.commands.api.sender.ICommandSender;
+import org.selyu.commands.api.util.CommandUtil;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -24,10 +24,10 @@ public final class CommandArgs {
 
     public CommandArgs(@Nonnull AbstractCommandService<?> commandService, @Nonnull ICommandSender<?> sender, @Nonnull String label, @Nonnull List<String> args,
                        @Nonnull Map<Character, CommandFlag> flags) {
-        Preconditions.checkNotNull(commandService, "CommandService cannot be null");
-        Preconditions.checkNotNull(sender, "CommandSender cannot be null");
-        Preconditions.checkNotNull(label, "Label cannot be null");
-        Preconditions.checkNotNull(args, "Command args cannot be null");
+        CommandUtil.checkNotNull(commandService, "CommandService cannot be null");
+        CommandUtil.checkNotNull(sender, "CommandSender cannot be null");
+        CommandUtil.checkNotNull(label, "Label cannot be null");
+        CommandUtil.checkNotNull(args, "Command args cannot be null");
         this.commandService = commandService;
         this.sender = sender;
         this.label = label;

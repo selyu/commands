@@ -1,6 +1,5 @@
 package org.selyu.commands.api.command;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.selyu.commands.api.ICommandService;
 import org.selyu.commands.api.annotation.Duration;
@@ -24,7 +23,7 @@ import org.selyu.commands.api.parametric.ProviderAssigner;
 import org.selyu.commands.api.parametric.binder.CommandBinder;
 import org.selyu.commands.api.provider.*;
 import org.selyu.commands.api.sender.ICommandSender;
-import org.selyu.commands.api.util.StringUtils;
+import org.selyu.commands.api.util.CommandUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -84,21 +83,21 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
     @Override
     public final void setAuthorizer(@Nonnull IAuthorizer<?> authorizer) {
-        Preconditions.checkNotNull(authorizer, "Authorizer cannot be null");
+        CommandUtil.checkNotNull(authorizer, "Authorizer cannot be null");
         this.authorizer = authorizer;
     }
 
     @Override
     public void setHelpFormatter(@Nonnull IHelpFormatter helpFormatter) {
-        Preconditions.checkNotNull(authorizer, "HelpFormatter cannot be null");
+        CommandUtil.checkNotNull(authorizer, "HelpFormatter cannot be null");
         helpService.setHelpFormatter(helpFormatter);
     }
 
     @Override
     public final CommandContainer register(@Nonnull Object handler, @Nonnull String name, @Nullable String... aliases) throws CommandRegistrationException {
-        Preconditions.checkNotNull(handler, "Handler object cannot be null");
-        Preconditions.checkNotNull(name, "Name cannot be null");
-        Preconditions.checkState(name.length() > 0, "Name cannot be empty (must be > 0 characters in length)");
+        CommandUtil.checkNotNull(handler, "Handler object cannot be null");
+        CommandUtil.checkNotNull(name, "Name cannot be null");
+        CommandUtil.checkState(name.length() > 0, "Name cannot be empty (must be > 0 characters in length)");
         Set<String> aliasesSet = new HashSet<>();
         if (aliases != null) {
             aliasesSet.addAll(Arrays.asList(aliases));
@@ -119,8 +118,8 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
     @Override
     public final CommandContainer registerSub(@Nonnull CommandContainer root, @Nonnull Object handler) {
-        Preconditions.checkNotNull(root, "Root command container cannot be null");
-        Preconditions.checkNotNull(handler, "Handler object cannot be null");
+        CommandUtil.checkNotNull(root, "Root command container cannot be null");
+        CommandUtil.checkNotNull(handler, "Handler object cannot be null");
         try {
             Map<String, WrappedCommand> extractCommands = extractor.extractCommands(handler);
             extractCommands.forEach((s, d) -> root.getCommands().put(s, d));
@@ -174,10 +173,10 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
     @SuppressWarnings("unchecked")
     private void checkAuthorization(@Nonnull ICommandSender<?> sender, @Nonnull WrappedCommand command, @Nonnull String label, @Nonnull String[] args) {
-        Preconditions.checkNotNull(sender, "Sender cannot be null");
-        Preconditions.checkNotNull(command, "Command cannot be null");
-        Preconditions.checkNotNull(label, "Label cannot be null");
-        Preconditions.checkNotNull(args, "Args cannot be null");
+        CommandUtil.checkNotNull(sender, "Sender cannot be null");
+        CommandUtil.checkNotNull(command, "Command cannot be null");
+        CommandUtil.checkNotNull(label, "Label cannot be null");
+        CommandUtil.checkNotNull(args, "Args cannot be null");
         if (authorizer.isAuthorized(sender, command)) {
             if (command.isRequiresAsync()) {
                 runAsync(() -> finishExecution(sender, command, label, args));
@@ -202,7 +201,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
                 command.getMethod().invoke(command.getHandler(), parsedArguments);
             } catch (IllegalAccessException | InvocationTargetException ex) {
                 sender.sendMessage(lang.get(Lang.Type.EXCEPTION));
-                throw new CommandException("Failed to execute command '" + command.getName() + "' with arguments '" + StringUtils.join(args, ' ') + " for sender " + sender.getName(), ex);
+                throw new CommandException("Failed to execute command '" + command.getName() + "' with arguments '" + CommandUtil.join(args, ' ') + " for sender " + sender.getName(), ex);
             }
         } catch (CommandExitMessage ex) {
             sender.sendMessage(ex.getMessage());
@@ -214,7 +213,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
     @Nullable
     public final CommandContainer getContainerFor(@Nonnull WrappedCommand command) {
-        Preconditions.checkNotNull(command, "WrappedCommand cannot be null");
+        CommandUtil.checkNotNull(command, "WrappedCommand cannot be null");
         for (CommandContainer container : commands.values()) {
             if (container.getCommands().containsValue(command)) {
                 return container;
@@ -226,7 +225,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     @SuppressWarnings("unchecked")
     @Nullable
     public final <TT> BindingContainer<TT> getBindingsFor(@Nonnull Class<TT> type) {
-        Preconditions.checkNotNull(type, "Type cannot be null");
+        CommandUtil.checkNotNull(type, "Type cannot be null");
         if (bindings.containsKey(type)) {
             return (BindingContainer<TT>) bindings.get(type);
         }
@@ -236,12 +235,12 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     @Nullable
     @Override
     public final CommandContainer get(@Nonnull String name) {
-        Preconditions.checkNotNull(name, "Name cannot be null");
+        CommandUtil.checkNotNull(name, "Name cannot be null");
         return commands.get(getCommandKey(name));
     }
 
     public final String getCommandKey(@Nonnull String name) {
-        Preconditions.checkNotNull(name, "Name cannot be null");
+        CommandUtil.checkNotNull(name, "Name cannot be null");
         if (name.length() == 0) {
             return DEFAULT_KEY;
         }
@@ -250,14 +249,14 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
     @Override
     public final <TT> CommandBinder<TT> bind(@Nonnull Class<TT> type) {
-        Preconditions.checkNotNull(type, "Type cannot be null for bind");
+        CommandUtil.checkNotNull(type, "Type cannot be null for bind");
         return new CommandBinder<>(this, type);
     }
 
     public final <TT> void bindProvider(@Nonnull Class<TT> type, @Nonnull Set<Class<? extends Annotation>> annotations, @Nonnull CommandProvider<TT> provider) {
-        Preconditions.checkNotNull(type, "Type cannot be null");
-        Preconditions.checkNotNull(annotations, "Annotations cannot be null");
-        Preconditions.checkNotNull(provider, "Provider cannot be null");
+        CommandUtil.checkNotNull(type, "Type cannot be null");
+        CommandUtil.checkNotNull(annotations, "Annotations cannot be null");
+        CommandUtil.checkNotNull(provider, "Provider cannot be null");
         BindingContainer<TT> container = getBindingsFor(type);
         if (container == null) {
             container = new BindingContainer<>(type);

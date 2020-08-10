@@ -1,7 +1,7 @@
 package org.selyu.commands.api.flag;
 
-import com.google.common.base.Preconditions;
 import org.selyu.commands.api.exception.CommandArgumentException;
+import org.selyu.commands.api.util.CommandUtil;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 public final class FlagExtractor {
     public static Map<Character, CommandFlag> extractFlags(final @Nonnull List<String> args) throws CommandArgumentException {
-        Preconditions.checkNotNull(args, "Args cannot be null");
+        CommandUtil.checkNotNull(args, "Args cannot be null");
         Map<Character, CommandFlag> flags = new HashMap<>();
         Iterator<String> it = args.iterator();
         Character currentFlag = null;

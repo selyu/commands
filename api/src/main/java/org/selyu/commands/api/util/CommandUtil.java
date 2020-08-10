@@ -3,7 +3,7 @@ package org.selyu.commands.api.util;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class StringUtils {
+public class CommandUtil {
     public String join(String[] strings, char separator) {
         if(strings == null) {
             return null;
@@ -28,5 +28,17 @@ public class StringUtils {
         }
 
         return builder.toString();
+    }
+
+    public void checkNotNull(Object object, String error) {
+        if(object == null) {
+            throw new NullPointerException(error);
+        }
+    }
+
+    public void checkState(boolean state, String error) {
+        if(!state) {
+            throw new IllegalStateException(error);
+        }
     }
 }

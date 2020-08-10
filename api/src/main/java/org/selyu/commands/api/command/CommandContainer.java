@@ -1,8 +1,7 @@
 package org.selyu.commands.api.command;
 
-import com.google.common.base.Preconditions;
 import org.selyu.commands.api.tab.TabCompleter;
-import org.selyu.commands.api.util.StringUtils;
+import org.selyu.commands.api.util.CommandUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,7 +33,7 @@ public abstract class CommandContainer {
     }
 
     public List<String> getCommandSuggestions(@Nonnull String prefix) {
-        Preconditions.checkNotNull(prefix, "Prefix cannot be null");
+        CommandUtil.checkNotNull(prefix, "Prefix cannot be null");
         final String p = prefix.toLowerCase();
         List<String> suggestions = new ArrayList<>();
         for (WrappedCommand c : commands.values()) {
@@ -61,13 +60,13 @@ public abstract class CommandContainer {
 
     @Nullable
     public WrappedCommand get(@Nonnull String name) {
-        Preconditions.checkNotNull(name, "Name cannot be null");
+        CommandUtil.checkNotNull(name, "Name cannot be null");
         return commands.get(commandService.getCommandKey(name));
     }
 
     @Nullable
     public WrappedCommand getByKeyOrAlias(@Nonnull String key) {
-        Preconditions.checkNotNull(key, "Key cannot be null");
+        CommandUtil.checkNotNull(key, "Key cannot be null");
         if (commands.containsKey(key)) {
             return commands.get(key);
         }
@@ -89,7 +88,7 @@ public abstract class CommandContainer {
     @Nullable
     public Map.Entry<WrappedCommand, String[]> getCommand(String[] args) {
         for (int i = (args.length - 1); i >= 0; i--) {
-            String key = commandService.getCommandKey(StringUtils.join(Arrays.copyOfRange(args, 0, i + 1), ' '));
+            String key = commandService.getCommandKey(CommandUtil.join(Arrays.copyOfRange(args, 0, i + 1), ' '));
             WrappedCommand wrappedCommand = getByKeyOrAlias(key);
             if (wrappedCommand != null) {
                 return new AbstractMap.SimpleEntry<>(wrappedCommand, Arrays.copyOfRange(args, i + 1, args.length));

@@ -1,11 +1,11 @@
 package org.selyu.commands.api.command;
 
 import org.junit.Test;
-import org.selyu.commands.api.util.StringUtils;
+import org.selyu.commands.api.util.CommandUtil;
 
 import static org.junit.Assert.assertEquals;
 
-public class StringUtilsTest {
+public class CommandUtilTest {
     @Test
     public void apache_output() {
         // OUTPUT: Apache null:help  hello | Apache Nonnull:help goodbye | Apache oneArg:hi
@@ -23,9 +23,9 @@ public class StringUtilsTest {
 
     @Test
     public void our_output() {
-        String ourNull = StringUtils.join(new String[]{"help", null, "hello"}, ' ');
-        String ourNonNull = StringUtils.join(new String[]{"help", "goodbye"}, ' ');
-        String ourOneArg = StringUtils.join(new String[]{"hi"}, ' ');
+        String ourNull = CommandUtil.join(new String[]{"help", null, "hello"}, ' ');
+        String ourNonNull = CommandUtil.join(new String[]{"help", "goodbye"}, ' ');
+        String ourOneArg = CommandUtil.join(new String[]{"hi"}, ' ');
 
         assertEquals(ourNull, "help  hello");
         assertEquals(ourNonNull, "help goodbye");

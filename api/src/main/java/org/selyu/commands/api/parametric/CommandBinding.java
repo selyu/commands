@@ -1,7 +1,7 @@
 package org.selyu.commands.api.parametric;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.selyu.commands.api.util.CommandUtil;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
@@ -20,7 +20,7 @@ public class CommandBinding<T> {
     }
 
     public boolean canProvideFor(@Nonnull CommandParameter parameter) {
-        Preconditions.checkNotNull(parameter, "Parameter cannot be null");
+        CommandUtil.checkNotNull(parameter, "Parameter cannot be null");
         // The parameter and binding need to have exact same annotations
         for (Annotation c : parameter.getClassifierAnnotations()) {
             if (!annotations.contains(c.annotationType())) {

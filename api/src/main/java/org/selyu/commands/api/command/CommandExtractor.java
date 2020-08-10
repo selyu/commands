@@ -1,18 +1,15 @@
 package org.selyu.commands.api.command;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 import org.selyu.commands.api.annotation.Command;
 import org.selyu.commands.api.annotation.Require;
 import org.selyu.commands.api.exception.CommandRegistrationException;
 import org.selyu.commands.api.exception.CommandStructureException;
 import org.selyu.commands.api.exception.MissingProviderException;
+import org.selyu.commands.api.util.CommandUtil;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public final class CommandExtractor {
     private final AbstractCommandService<?> commandService;
@@ -22,7 +19,7 @@ public final class CommandExtractor {
     }
 
     public Map<String, WrappedCommand> extractCommands(@Nonnull Object handler) throws MissingProviderException, CommandStructureException {
-        Preconditions.checkNotNull(handler, "Handler object cannot be null");
+        CommandUtil.checkNotNull(handler, "Handler object cannot be null");
         final Map<String, WrappedCommand> commands = new HashMap<>();
         for (Method method : handler.getClass().getDeclaredMethods()) {
             Optional<WrappedCommand> o = extractCommand(handler, method);
@@ -35,8 +32,8 @@ public final class CommandExtractor {
     }
 
     private Optional<WrappedCommand> extractCommand(@Nonnull Object handler, @Nonnull Method method) throws MissingProviderException, CommandStructureException {
-        Preconditions.checkNotNull(handler, "Handler object cannot be null");
-        Preconditions.checkNotNull(method, "Method cannot be null");
+        CommandUtil.checkNotNull(handler, "Handler object cannot be null");
+        CommandUtil.checkNotNull(method, "Method cannot be null");
         if (method.isAnnotationPresent(Command.class)) {
             try {
                 method.setAccessible(true);
@@ -50,7 +47,7 @@ public final class CommandExtractor {
                 perm = require.value();
             }
             WrappedCommand wrappedCommand = new WrappedCommand(
-                    commandService, command.name(), Sets.newHashSet(command.aliases()), command.desc(), command.usage(),
+                    commandService, command.name(), new HashSet<>(Arrays.asList(command.aliases())), command.desc(), command.usage(),
                     perm, handler, method, command.async()
             );
             return Optional.of(wrappedCommand);
