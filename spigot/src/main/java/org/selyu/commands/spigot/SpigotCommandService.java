@@ -51,8 +51,8 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
 
     @Nonnull
     @Override
-    public SpigotCommandContainer createContainer(@Nonnull AbstractCommandService<?> commandService, @Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands) {
-        return new SpigotCommandContainer(commandService, object, name, aliases, commands);
+    public SpigotCommandContainer createContainer(@Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands) {
+        return new SpigotCommandContainer(this, object, name, aliases, commands);
     }
 
     @Override

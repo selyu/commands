@@ -80,7 +80,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     protected abstract IAuthorizer<?> getDefaultAuthorizer();
 
     @Nonnull
-    protected abstract T createContainer(@Nonnull AbstractCommandService<?> commandService, @Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands);
+    protected abstract T createContainer(@Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands);
 
     @Override
     public final void setAuthorizer(@Nonnull IAuthorizer<?> authorizer) {
@@ -103,7 +103,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
             if (extractCommands.isEmpty()) {
                 throw new CommandRegistrationException("There were no commands to register in the " + handler.getClass().getSimpleName() + " class (" + extractCommands.size() + ")");
             }
-            T container = createContainer(this, handler, name, aliasesSet, extractCommands);
+            T container = createContainer(handler, name, aliasesSet, extractCommands);
             commands.put(getCommandKey(name), container);
             return container;
         } catch (MissingProviderException | CommandStructureException ex) {
