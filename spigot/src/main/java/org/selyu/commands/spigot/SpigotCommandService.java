@@ -1,5 +1,9 @@
 package org.selyu.commands.spigot;
 
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -24,6 +28,21 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
 
     public SpigotCommandService(@Nonnull JavaPlugin plugin) {
         this.plugin = plugin;
+        helpService.setHelpFormatter((s, container) -> {
+            if (s.getInstance() instanceof CommandSender) {
+                CommandSender sender = (CommandSender) s.getInstance();
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7&m--------------------------------"));
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bHelp &7- &6/" + container.getName()));
+                for (WrappedCommand c : container.getCommands().values()) {
+                    TextComponent msg = new TextComponent(net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&',
+                            "&7/" + container.getName() + (c.getName().length() > 0 ? " &e" + c.getName() : "") + " &7" + c.getMostApplicableUsage() + "&7- &f" + c.getShortDescription()));
+                    msg.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.GRAY + "/" + container.getName() + " " + c.getName() + "- " + ChatColor.WHITE + c.getDescription())));
+                    msg.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + container.getName() + " " + c.getName()));
+                    sender.spigot().sendMessage(msg);
+                }
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7&m--------------------------------"));
+            }
+        });
     }
 
     @Override
