@@ -1,9 +1,9 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import org.selyu.commands.api.exception.CommandExitMessage;
+import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.lang.Lang;
-import org.selyu.commands.api.parametric.CommandProvider;
+import org.selyu.commands.api.parametric.ICommandProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public final class DurationProvider extends CommandProvider<Date> {
+public final class DurationProvider implements ICommandProvider<Date> {
     private final Lang lang;
 
     public DurationProvider(@Nonnull Lang lang) {
@@ -31,25 +31,27 @@ public final class DurationProvider extends CommandProvider<Date> {
 
     @Nullable
     @Override
-    public Date provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
+    public Date provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws IllegalArgumentException {
         String s = arg.get();
         try {
             long l = smartParseDuration(s);
             if (l != -1) {
                 return new Date(l);
             } else {
-                throw new CommandExitMessage(lang.get(Lang.Type.INVALID_DURATION));
+                throw new IllegalArgumentException(lang.get(Lang.Type.INVALID_DURATION));
             }
         } catch (Exception ex) {
-            throw new CommandExitMessage(lang.get(Lang.Type.INVALID_DURATION));
+            throw new IllegalArgumentException(lang.get(Lang.Type.INVALID_DURATION));
         }
     }
 
+    @Nonnull
     @Override
     public String argumentDescription() {
         return "duration";
     }
 
+    @Nonnull
     @Override
     public List<String> getSuggestions(@Nonnull String prefix) {
         return Collections.emptyList();
@@ -132,9 +134,7 @@ public final class DurationProvider extends CommandProvider<Date> {
             while (true) {
                 if (chars.length > start && start > 0) {
                     char c = chars[start];
-                    System.out.println(c);
                     if (!isTimeModifier(c)) {
-                        System.out.println(start);
                         start--;
                         continue;
                     } else {

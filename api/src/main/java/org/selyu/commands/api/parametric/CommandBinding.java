@@ -11,9 +11,9 @@ import java.util.Set;
 public class CommandBinding<T> {
     private final Class<T> type;
     private final Set<Class<? extends Annotation>> annotations;
-    private final CommandProvider<T> provider;
+    private final ICommandProvider<T> provider;
 
-    public CommandBinding(Class<T> type, Set<Class<? extends Annotation>> annotations, CommandProvider<T> provider) {
+    public CommandBinding(Class<T> type, Set<Class<? extends Annotation>> annotations, ICommandProvider<T> provider) {
         this.type = type;
         this.annotations = annotations;
         this.provider = provider;

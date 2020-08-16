@@ -1,7 +1,7 @@
 package org.selyu.commands.api.parametric.binder;
 
 import org.selyu.commands.api.command.AbstractCommandService;
-import org.selyu.commands.api.parametric.CommandProvider;
+import org.selyu.commands.api.parametric.ICommandProvider;
 import org.selyu.commands.api.provider.InstanceProvider;
 import org.selyu.commands.api.util.CommandUtil;
 
@@ -14,7 +14,7 @@ public class CommandBinder<T> {
     private final AbstractCommandService<?> commandService;
     private final Class<T> type;
     private final Set<Class<? extends Annotation>> classifiers = new HashSet<>();
-    private CommandProvider<T> provider;
+    private ICommandProvider<T> provider;
 
     public CommandBinder(AbstractCommandService<?> commandService, Class<T> type) {
         this.commandService = commandService;
@@ -33,7 +33,7 @@ public class CommandBinder<T> {
         finish();
     }
 
-    public void toProvider(@Nonnull CommandProvider<T> provider) {
+    public void toProvider(@Nonnull ICommandProvider<T> provider) {
         CommandUtil.checkNotNull(provider, "Provider cannot be null for toProvider during binding for " + type.getSimpleName());
         this.provider = provider;
         finish();

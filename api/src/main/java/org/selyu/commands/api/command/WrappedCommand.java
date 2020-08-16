@@ -5,7 +5,7 @@ import org.selyu.commands.api.exception.CommandStructureException;
 import org.selyu.commands.api.exception.MissingProviderException;
 import org.selyu.commands.api.parametric.CommandParameter;
 import org.selyu.commands.api.parametric.CommandParameters;
-import org.selyu.commands.api.parametric.CommandProvider;
+import org.selyu.commands.api.parametric.ICommandProvider;
 
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -23,8 +23,8 @@ public final class WrappedCommand {
     private final Method method;
     private final boolean async;
     private final CommandParameters parameters;
-    private final CommandProvider<?>[] providers;
-    private final CommandProvider<?>[] consumingProviders;
+    private final ICommandProvider<?>[] providers;
+    private final ICommandProvider<?>[] consumingProviders;
     private final int consumingArgCount;
     private final int requiredArgCount;
     private final boolean requiresAsync;
@@ -73,7 +73,7 @@ public final class WrappedCommand {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < parameters.getParameters().length; i++) {
             CommandParameter parameter = parameters.getParameters()[i];
-            CommandProvider<?> provider = providers[i];
+            ICommandProvider<?> provider = providers[i];
             if (parameter.isFlag()) {
                 sb.append("-").append(parameter.getFlag().value()).append(" ");
             } else {
@@ -106,7 +106,7 @@ public final class WrappedCommand {
             return true;
         }
 
-        for (CommandProvider<?> provider : providers) {
+        for (ICommandProvider<?> provider : providers) {
             if (provider.isAsync()) {
                 return true;
             }
@@ -114,10 +114,10 @@ public final class WrappedCommand {
         return false;
     }
 
-    private CommandProvider<?>[] calculateConsumingProviders() {
-        CommandProvider<?>[] consumingProviders = new CommandProvider<?>[consumingArgCount];
+    private ICommandProvider<?>[] calculateConsumingProviders() {
+        ICommandProvider<?>[] consumingProviders = new ICommandProvider<?>[consumingArgCount];
         int x = 0;
-        for (CommandProvider<?> provider : providers) {
+        for (ICommandProvider<?> provider : providers) {
             if (provider.doesConsumeArgument()) {
                 consumingProviders[x] = provider;
                 x++;
@@ -128,7 +128,7 @@ public final class WrappedCommand {
 
     private int calculateConsumingArgCount() {
         int count = 0;
-        for (CommandProvider<?> provider : providers) {
+        for (ICommandProvider<?> provider : providers) {
             if (provider.doesConsumeArgument()) {
                 count++;
             }
@@ -141,7 +141,7 @@ public final class WrappedCommand {
         for (int i = 0; i < parameters.getParameters().length; i++) {
             CommandParameter parameter = parameters.getParameters()[i];
             if (!parameter.isFlag() && !parameter.isOptional()) {
-                CommandProvider<?> provider = providers[i];
+                ICommandProvider<?> provider = providers[i];
                 if (provider.doesConsumeArgument()) {
                     count++;
                 }

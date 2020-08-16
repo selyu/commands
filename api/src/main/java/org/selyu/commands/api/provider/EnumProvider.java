@@ -1,9 +1,9 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import org.selyu.commands.api.exception.CommandExitMessage;
+import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.lang.Lang;
-import org.selyu.commands.api.parametric.CommandProvider;
+import org.selyu.commands.api.parametric.ICommandProvider;
 import org.selyu.commands.api.util.CommandUtil;
 
 import javax.annotation.Nonnull;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public final class EnumProvider<T extends Enum<T>> extends CommandProvider<T> {
+public final class EnumProvider<T extends Enum<T>> implements ICommandProvider<T> {
     private static final Pattern NON_ALPHANUMERIC = Pattern.compile("[^A-Za-z0-9]");
 
     private final Lang lang;
@@ -34,7 +34,7 @@ public final class EnumProvider<T extends Enum<T>> extends CommandProvider<T> {
     }
 
     @Override
-    public T provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
+    public T provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws IllegalArgumentException {
         String name = arg.get();
         String s = simplify(name);
 
@@ -43,14 +43,16 @@ public final class EnumProvider<T extends Enum<T>> extends CommandProvider<T> {
                 return entry;
             }
         }
-        throw new CommandExitMessage(lang.get(Lang.Type.INVALID_ENUM_VALUE, argumentDescription(), CommandUtil.join(getSuggestions("").toArray(new String[0]), ' ')));
+        throw new IllegalArgumentException(lang.get(Lang.Type.INVALID_ENUM_VALUE, argumentDescription(), CommandUtil.join(getSuggestions("").toArray(new String[0]), ' ')));
     }
 
+    @Nonnull
     @Override
     public String argumentDescription() {
         return enumClass.getSimpleName();
     }
 
+    @Nonnull
     @Override
     public List<String> getSuggestions(@Nonnull String prefix) {
         List<String> suggestions = new ArrayList<>();

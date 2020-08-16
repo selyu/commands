@@ -1,14 +1,14 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import org.selyu.commands.api.parametric.CommandProvider;
+import org.selyu.commands.api.parametric.ICommandProvider;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
-public final class InstanceProvider<T> extends CommandProvider<T> {
+public final class InstanceProvider<T> implements ICommandProvider<T> {
 
     private final T instance;
 
@@ -31,11 +31,13 @@ public final class InstanceProvider<T> extends CommandProvider<T> {
         return instance;
     }
 
+    @Nonnull
     @Override
     public String argumentDescription() {
         return instance.getClass().getSimpleName() + " (provided)";
     }
 
+    @Nonnull
     @Override
     public List<String> getSuggestions(@Nonnull String prefix) {
         return Collections.emptyList();

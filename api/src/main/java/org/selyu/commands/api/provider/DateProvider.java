@@ -1,9 +1,9 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import org.selyu.commands.api.exception.CommandExitMessage;
+import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.lang.Lang;
-import org.selyu.commands.api.parametric.CommandProvider;
+import org.selyu.commands.api.parametric.ICommandProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,7 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public final class DateProvider extends CommandProvider<Date> {
+public final class DateProvider implements ICommandProvider<Date> {
     public static final String FORMAT_STR = "yyyy-MM-dd@HH:mm";
     public static final DateFormat FORMAT = new SimpleDateFormat(FORMAT_STR, Locale.ENGLISH);
 
@@ -35,20 +35,22 @@ public final class DateProvider extends CommandProvider<Date> {
 
     @Nullable
     @Override
-    public Date provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
+    public Date provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws IllegalArgumentException {
         String s = arg.get();
         try {
             return FORMAT.parse(s);
         } catch (ParseException e) {
-            throw new CommandExitMessage(lang.get(Lang.Type.INVALID_DATE, FORMAT_STR));
+            throw new IllegalArgumentException(lang.get(Lang.Type.INVALID_DATE, FORMAT_STR));
         }
     }
 
+    @Nonnull
     @Override
     public String argumentDescription() {
         return "date: " + FORMAT_STR;
     }
 
+    @Nonnull
     @Override
     public List<String> getSuggestions(@Nonnull String prefix) {
         Calendar calendar = Calendar.getInstance();

@@ -3,7 +3,7 @@ package org.selyu.commands.api.modifier;
 import org.selyu.commands.api.annotation.Classifier;
 import org.selyu.commands.api.annotation.Modifier;
 import org.selyu.commands.api.command.CommandExecution;
-import org.selyu.commands.api.exception.CommandExitMessage;
+import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.parametric.CommandParameter;
 import org.selyu.commands.api.util.CommandUtil;
 
@@ -20,7 +20,7 @@ public class ModifierService {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Nullable
-    public Object executeModifiers(@Nonnull CommandExecution execution, @Nonnull CommandParameter param, @Nullable Object parsedArgument) throws CommandExitMessage {
+    public Object executeModifiers(@Nonnull CommandExecution execution, @Nonnull CommandParameter param, @Nullable Object parsedArgument) throws IllegalArgumentException {
         CommandUtil.checkNotNull(execution, "CommandExecution cannot be null");
         CommandUtil.checkNotNull(param, "CommandParameter cannot be null");
         for (Annotation annotation : param.getModifierAnnotations()) {

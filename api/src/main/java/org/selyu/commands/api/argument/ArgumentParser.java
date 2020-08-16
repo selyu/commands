@@ -6,9 +6,9 @@ import org.selyu.commands.api.flag.CommandFlag;
 import org.selyu.commands.api.command.WrappedCommand;
 import org.selyu.commands.api.command.AbstractCommandService;
 import org.selyu.commands.api.exception.CommandArgumentException;
-import org.selyu.commands.api.exception.CommandExitMessage;
+import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.parametric.CommandParameter;
-import org.selyu.commands.api.parametric.CommandProvider;
+import org.selyu.commands.api.parametric.ICommandProvider;
 import org.selyu.commands.api.util.CommandUtil;
 
 import javax.annotation.Nonnull;
@@ -59,14 +59,14 @@ public final class ArgumentParser {
     }
 
     @Nonnull
-    public Object[] parseArguments(@Nonnull CommandExecution execution, @Nonnull WrappedCommand command, @Nonnull CommandArgs args) throws CommandExitMessage, CommandArgumentException {
+    public Object[] parseArguments(@Nonnull CommandExecution execution, @Nonnull WrappedCommand command, @Nonnull CommandArgs args) throws IllegalArgumentException, CommandArgumentException {
         CommandUtil.checkNotNull(command, "WrappedCommand cannot be null");
         CommandUtil.checkNotNull(args, "CommandArgs cannot be null");
         Object[] arguments = new Object[command.getMethod().getParameterCount()];
         for (int i = 0; i < command.getParameters().getParameters().length; i++) {
             CommandParameter param = command.getParameters().getParameters()[i];
             boolean skipOptional = false; // dont complete exceptionally if true if the arg is missing
-            CommandProvider<?> provider = command.getProviders()[i];
+            ICommandProvider<?> provider = command.getProviders()[i];
             String value = null;
 
             if (param.isFlag()) {

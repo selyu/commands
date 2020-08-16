@@ -7,7 +7,7 @@ import org.selyu.commands.api.command.CommandContainer;
 import org.selyu.commands.api.help.IHelpFormatter;
 import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.api.modifier.ICommandModifier;
-import org.selyu.commands.api.parametric.CommandProvider;
+import org.selyu.commands.api.parametric.ICommandProvider;
 import org.selyu.commands.api.parametric.binder.CommandBinder;
 
 import javax.annotation.Nonnull;
@@ -22,7 +22,7 @@ public interface ICommandService {
      * @param handler Object that has the {@link Command} annotated methods
      * @param name    The name of the command to register.
      *                The names of methods within the handler object will be sub-commands to this name.
-     *                If you want to create a default command (just /name), set the name here and in the
+     *                If you want to create a default command (just name), set the name here and in the
      *                {@link Command} annotation set name = ""
      * @param aliases (Optional) A list of alternate command names that can be used
      * @return The {@link CommandContainer} containing the command you registered
@@ -43,12 +43,11 @@ public interface ICommandService {
      * Must be called after all of you commands have been registered with
      * {@link #register(Object, String, String...)} and {@link #registerSub(CommandContainer, Object)}
      * <p>
-     * This registers the command into the Bukkit/Spigot CommandMap so that they can be executed on the server.
      */
     void registerCommands();
 
     /**
-     * Start binding a class type to a {@link CommandProvider} or instance.
+     * Start binding a class type to a {@link ICommandProvider} or instance.
      *
      * @param type The Class type to bind to
      * @param <T>  The type of class

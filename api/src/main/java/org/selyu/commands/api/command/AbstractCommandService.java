@@ -18,7 +18,7 @@ import org.selyu.commands.api.modifier.ICommandModifier;
 import org.selyu.commands.api.modifier.ModifierService;
 import org.selyu.commands.api.parametric.BindingContainer;
 import org.selyu.commands.api.parametric.CommandBinding;
-import org.selyu.commands.api.parametric.CommandProvider;
+import org.selyu.commands.api.parametric.ICommandProvider;
 import org.selyu.commands.api.parametric.ProviderAssigner;
 import org.selyu.commands.api.parametric.binder.CommandBinder;
 import org.selyu.commands.api.provider.*;
@@ -38,14 +38,14 @@ import java.util.concurrent.ConcurrentMap;
 public abstract class AbstractCommandService<T extends CommandContainer> implements ICommandService {
     public static String DEFAULT_KEY = "COMMANDS_DEFAULT";
 
-    protected final CommandExtractor extractor = new CommandExtractor(this);
+    protected final Lang lang = new Lang();
     protected final HelpService helpService = new HelpService(this);
+    protected final CommandExtractor extractor = new CommandExtractor(this);
     protected final ProviderAssigner providerAssigner = new ProviderAssigner(this);
     protected final ArgumentParser argumentParser = new ArgumentParser(this);
     protected final ModifierService modifierService = new ModifierService();
     protected final ConcurrentMap<String, T> commands = new ConcurrentHashMap<>();
     protected final ConcurrentMap<Class<?>, BindingContainer<?>> bindings = new ConcurrentHashMap<>();
-    protected final Lang lang = new Lang();
     protected IAuthorizer authorizer = new AuthorizerImpl(lang);
 
     public AbstractCommandService() {
@@ -130,7 +130,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     }
 
     @Override
-    public final <TT> void registerModifier(@Nonnull Class<? extends Annotation> annotation, @Nonnull Class<TT> type, @Nonnull ICommandModifier<TT> modifier) {
+    public final <TYPE> void registerModifier(@Nonnull Class<? extends Annotation> annotation, @Nonnull Class<TYPE> type, @Nonnull ICommandModifier<TYPE> modifier) {
         modifierService.registerModifier(annotation, type, modifier);
     }
 
@@ -199,11 +199,22 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
             }
             try {
                 command.getMethod().invoke(command.getHandler(), parsedArguments);
-            } catch (IllegalAccessException | InvocationTargetException ex) {
+            } catch (InvocationTargetException | IllegalAccessException ex) {
+                if (ex instanceof InvocationTargetException) {
+                    InvocationTargetException ite = (InvocationTargetException) ex;
+                    if (ite.getCause() instanceof CommandExitMessage) {
+                        CommandExitMessage cem = (CommandExitMessage) ite.getCause();
+                        sender.sendMessage(cem.getMessage());
+                        if (cem.isShowUsage()) {
+                            helpService.sendUsageMessage(sender, getContainerFor(command), command);
+                        }
+                        return;
+                    }
+                }
                 sender.sendMessage(lang.get(Lang.Type.EXCEPTION));
                 throw new CommandException("Failed to execute command '" + command.getName() + "' with arguments '" + CommandUtil.join(args, ' ') + " for sender " + sender.getName(), ex);
             }
-        } catch (CommandExitMessage ex) {
+        } catch (IllegalArgumentException ex) {
             sender.sendMessage(ex.getMessage());
         } catch (CommandArgumentException ex) {
             sender.sendMessage(ex.getMessage());
@@ -224,10 +235,10 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
     @SuppressWarnings("unchecked")
     @Nullable
-    public final <TT> BindingContainer<TT> getBindingsFor(@Nonnull Class<TT> type) {
+    public final <TYPE> BindingContainer<TYPE> getBindingsFor(@Nonnull Class<TYPE> type) {
         CommandUtil.checkNotNull(type, "Type cannot be null");
         if (bindings.containsKey(type)) {
-            return (BindingContainer<TT>) bindings.get(type);
+            return (BindingContainer<TYPE>) bindings.get(type);
         }
         return null;
     }
@@ -248,21 +259,21 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     }
 
     @Override
-    public final <TT> CommandBinder<TT> bind(@Nonnull Class<TT> type) {
+    public final <TYPE> CommandBinder<TYPE> bind(@Nonnull Class<TYPE> type) {
         CommandUtil.checkNotNull(type, "Type cannot be null for bind");
         return new CommandBinder<>(this, type);
     }
 
-    public final <TT> void bindProvider(@Nonnull Class<TT> type, @Nonnull Set<Class<? extends Annotation>> annotations, @Nonnull CommandProvider<TT> provider) {
+    public final <TYPE> void bindProvider(@Nonnull Class<TYPE> type, @Nonnull Set<Class<? extends Annotation>> annotations, @Nonnull ICommandProvider<TYPE> provider) {
         CommandUtil.checkNotNull(type, "Type cannot be null");
         CommandUtil.checkNotNull(annotations, "Annotations cannot be null");
         CommandUtil.checkNotNull(provider, "Provider cannot be null");
-        BindingContainer<TT> container = getBindingsFor(type);
+        BindingContainer<TYPE> container = getBindingsFor(type);
         if (container == null) {
             container = new BindingContainer<>(type);
             bindings.put(type, container);
         }
-        CommandBinding<TT> binding = new CommandBinding<>(type, annotations, provider);
+        CommandBinding<TYPE> binding = new CommandBinding<>(type, annotations, provider);
         container.getBindings().add(binding);
     }
 }

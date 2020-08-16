@@ -12,9 +12,9 @@ public final class ProviderAssigner {
         this.commandService = commandService;
     }
 
-    public CommandProvider<?>[] assignProvidersFor(WrappedCommand wrappedCommand) throws MissingProviderException, CommandStructureException {
+    public ICommandProvider<?>[] assignProvidersFor(WrappedCommand wrappedCommand) throws MissingProviderException, CommandStructureException {
         CommandParameters parameters = wrappedCommand.getParameters();
-        CommandProvider<?>[] providers = new CommandProvider<?>[parameters.getParameters().length];
+        ICommandProvider<?>[] providers = new ICommandProvider<?>[parameters.getParameters().length];
         for (int i = 0; i < parameters.getParameters().length; i++) {
             CommandParameter param = parameters.getParameters()[i];
             if (param.isRequireLastArg() && !parameters.isLastArgument(i)) {
@@ -22,7 +22,7 @@ public final class ProviderAssigner {
             }
             BindingContainer<?> bindings = commandService.getBindingsFor(param.getType());
             if (bindings != null) {
-                CommandProvider<?> provider = null;
+                ICommandProvider<?> provider = null;
                 for (CommandBinding<?> binding : bindings.getBindings()) {
                     if (binding.canProvideFor(param)) {
                         provider = binding.getProvider();

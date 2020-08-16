@@ -37,9 +37,10 @@ public class Lang {
 
     public enum Type {
         EXCEPTION("An exception occurred while performing this command, Please contact an administrator."),
-        UNKNOWN_SUB_COMMAND("Unknown sub-command: {0}.  Use '/{1} help' to see available commands."),
-        PLEASE_CHOOSE_SUB_COMMAND("Please choose a sub-command.  Use '/{0} help' to see available commands."),
+        UNKNOWN_SUB_COMMAND("Unknown sub-command: {0}.  Use '{1} help' to see available commands."),
+        PLEASE_CHOOSE_SUB_COMMAND("Please choose a sub-command.  Use '{0} help' to see available commands."),
         NO_PERMISSION("You do not have permission to execute this command."),
+        USAGE("Command Usage: {0}"),
 
         INVALID_BOOLEAN("Required: Boolean (true/false), Given: ''{0}''"),
         INVALID_DOUBLE("Required: Decimal Number, Given: ''{0}''"),
@@ -53,6 +54,11 @@ public class Lang {
 
         Type(@Nonnull String defaultMessage) {
             this.defaultMessage = defaultMessage;
+        }
+
+        @Nonnull
+        public String getDefaultMessage() {
+            return defaultMessage;
         }
     }
 }

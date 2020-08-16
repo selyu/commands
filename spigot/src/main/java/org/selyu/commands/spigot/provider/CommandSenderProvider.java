@@ -1,8 +1,8 @@
 package org.selyu.commands.spigot.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import org.selyu.commands.api.exception.CommandExitMessage;
-import org.selyu.commands.api.parametric.CommandProvider;
+import java.lang.IllegalArgumentException;
+import org.selyu.commands.api.parametric.ICommandProvider;
 import org.bukkit.command.CommandSender;
 
 import javax.annotation.Nonnull;
@@ -10,7 +10,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
-public final class CommandSenderProvider extends CommandProvider<CommandSender> {
+public final class CommandSenderProvider implements ICommandProvider<CommandSender> {
     @Override
     public boolean doesConsumeArgument() {
         return false;
@@ -28,15 +28,17 @@ public final class CommandSenderProvider extends CommandProvider<CommandSender> 
 
     @Nonnull
     @Override
-    public CommandSender provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
+    public CommandSender provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws IllegalArgumentException {
         return (CommandSender) arg.getSender().getInstance();
     }
 
+    @Nonnull
     @Override
     public String argumentDescription() {
         return "sender";
     }
 
+    @Nonnull
     @Override
     public List<String> getSuggestions(@Nonnull String prefix) {
         return Collections.emptyList();

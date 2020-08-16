@@ -1,9 +1,9 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import org.selyu.commands.api.exception.CommandExitMessage;
+import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.lang.Lang;
-import org.selyu.commands.api.parametric.CommandProvider;
+import org.selyu.commands.api.parametric.ICommandProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class BooleanProvider extends CommandProvider<Boolean> {
+public final class BooleanProvider implements ICommandProvider<Boolean> {
     private final Lang lang;
     private static final List<String> SUGGEST = Collections.unmodifiableList(Arrays.asList("true", "false"));
     private static final List<String> SUGGEST_TRUE = Collections.singletonList("true");
@@ -32,11 +32,6 @@ public class BooleanProvider extends CommandProvider<Boolean> {
         return false;
     }
 
-    @Override
-    public boolean allowNullArgument() {
-        return true;
-    }
-
     @Nullable
     @Override
     public Boolean defaultNullValue() {
@@ -44,7 +39,7 @@ public class BooleanProvider extends CommandProvider<Boolean> {
     }
 
     @Override
-    public Boolean provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
+    public Boolean provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws IllegalArgumentException {
         String s = arg.get();
         if (s == null) {
             return false;
@@ -52,15 +47,17 @@ public class BooleanProvider extends CommandProvider<Boolean> {
         try {
             return Boolean.parseBoolean(s);
         } catch (NumberFormatException ex) {
-            throw new CommandExitMessage(lang.get(Lang.Type.INVALID_BOOLEAN, s));
+            throw new IllegalArgumentException(lang.get(Lang.Type.INVALID_BOOLEAN, s));
         }
     }
 
+    @Nonnull
     @Override
     public String argumentDescription() {
         return "true/false";
     }
 
+    @Nonnull
     @Override
     public List<String> getSuggestions(@Nonnull String prefix) {
         prefix = prefix.toLowerCase();

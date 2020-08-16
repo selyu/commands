@@ -1,9 +1,9 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import org.selyu.commands.api.exception.CommandExitMessage;
+import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.lang.Lang;
-import org.selyu.commands.api.parametric.CommandProvider;
+import org.selyu.commands.api.parametric.ICommandProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -11,7 +11,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
-public class DoubleProvider extends CommandProvider<Double> {
+public final class DoubleProvider implements ICommandProvider<Double> {
     private final Lang lang;
 
     public DoubleProvider(@Nonnull Lang lang) {
@@ -40,20 +40,22 @@ public class DoubleProvider extends CommandProvider<Double> {
     }
 
     @Override
-    public Double provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws CommandExitMessage {
+    public Double provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws IllegalArgumentException {
         String s = arg.get();
         try {
             return Double.parseDouble(s);
         } catch (NumberFormatException ex) {
-            throw new CommandExitMessage(lang.get(Lang.Type.INVALID_DOUBLE, s));
+            throw new IllegalArgumentException(lang.get(Lang.Type.INVALID_DOUBLE, s));
         }
     }
 
+    @Nonnull
     @Override
     public String argumentDescription() {
         return "decimal number";
     }
 
+    @Nonnull
     @Override
     public List<String> getSuggestions(@Nonnull String prefix) {
         return Collections.emptyList();

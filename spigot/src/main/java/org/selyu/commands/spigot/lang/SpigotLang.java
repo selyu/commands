@@ -12,6 +12,13 @@ public final class SpigotLang extends Lang {
         for (Type value : Type.values()) {
             messages.put(value, ChatColor.RED + value.defaultMessage);
         }
+        for (Lang.Type value : Lang.Type.values()) {
+            messages.put(value, ChatColor.RED + value.getDefaultMessage());
+        }
+
+        set(Lang.Type.UNKNOWN_SUB_COMMAND, ChatColor.RED + "Unknown sub-command: {0}.  Use '/{1} help' to see available commands.");
+        set(Lang.Type.PLEASE_CHOOSE_SUB_COMMAND, ChatColor.RED + "Please choose a sub-command.  Use '/{0} help' to see available commands.");
+        set(Lang.Type.USAGE, ChatColor.RED + "Command Usage: /{0}");
     }
 
     @Nonnull

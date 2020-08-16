@@ -2,7 +2,7 @@ package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
 import org.selyu.commands.api.argument.CommandArgs;
-import org.selyu.commands.api.parametric.CommandProvider;
+import org.selyu.commands.api.parametric.ICommandProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -10,7 +10,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
-public final class CommandArgsProvider extends CommandProvider<CommandArgs> {
+public final class CommandArgsProvider implements ICommandProvider<CommandArgs> {
     @Override
     public boolean doesConsumeArgument() {
         return false;
@@ -27,11 +27,13 @@ public final class CommandArgsProvider extends CommandProvider<CommandArgs> {
         return arg.getArgs();
     }
 
+    @Nonnull
     @Override
     public String argumentDescription() {
         return "args";
     }
 
+    @Nonnull
     @Override
     public List<String> getSuggestions(@Nonnull String prefix) {
         return Collections.emptyList();
