@@ -1,7 +1,6 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.api.parametric.ICommandProvider;
 
@@ -17,44 +16,6 @@ public final class DurationProvider implements ICommandProvider<Date> {
 
     public DurationProvider(@Nonnull Lang lang) {
         this.lang = lang;
-    }
-
-    @Override
-    public boolean doesConsumeArgument() {
-        return true;
-    }
-
-    @Override
-    public boolean isAsync() {
-        return false;
-    }
-
-    @Nullable
-    @Override
-    public Date provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws IllegalArgumentException {
-        String s = arg.get();
-        try {
-            long l = smartParseDuration(s);
-            if (l != -1) {
-                return new Date(l);
-            } else {
-                throw new IllegalArgumentException(lang.get(Lang.Type.INVALID_DURATION));
-            }
-        } catch (Exception ex) {
-            throw new IllegalArgumentException(lang.get(Lang.Type.INVALID_DURATION));
-        }
-    }
-
-    @Nonnull
-    @Override
-    public String argumentDescription() {
-        return "duration";
-    }
-
-    @Nonnull
-    @Override
-    public List<String> getSuggestions(@Nonnull String prefix) {
-        return Collections.emptyList();
     }
 
     public static long smartParseDuration(String s) {
@@ -156,6 +117,44 @@ public final class DurationProvider implements ICommandProvider<Date> {
 
     public static boolean isTimeModifier(char c) {
         return c == 'h' || c == 'm' || c == 's';
+    }
+
+    @Override
+    public boolean doesConsumeArgument() {
+        return true;
+    }
+
+    @Override
+    public boolean isAsync() {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public Date provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws IllegalArgumentException {
+        String s = arg.get();
+        try {
+            long l = smartParseDuration(s);
+            if (l != -1) {
+                return new Date(l);
+            } else {
+                throw new IllegalArgumentException(lang.get("invalid_duration"));
+            }
+        } catch (Exception ex) {
+            throw new IllegalArgumentException(lang.get("invalid_duration"));
+        }
+    }
+
+    @Nonnull
+    @Override
+    public String argumentDescription() {
+        return "duration";
+    }
+
+    @Nonnull
+    @Override
+    public List<String> getSuggestions(@Nonnull String prefix) {
+        return Collections.emptyList();
     }
 
 }

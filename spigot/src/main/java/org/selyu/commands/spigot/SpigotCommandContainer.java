@@ -5,8 +5,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.plugin.Plugin;
-import org.selyu.commands.api.command.AbstractCommandService;
 import org.selyu.commands.api.command.CommandContainer;
+import org.selyu.commands.api.command.CommandService;
 import org.selyu.commands.api.command.WrappedCommand;
 
 import javax.annotation.Nonnull;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 final class SpigotCommandContainer extends CommandContainer {
-    SpigotCommandContainer(AbstractCommandService<?> commandService, Object object, String name, Set<String> aliases, Map<String, WrappedCommand> commands) {
+    SpigotCommandContainer(CommandService<?> commandService, Object object, String name, Set<String> aliases, Map<String, WrappedCommand> commands) {
         super(commandService, object, name, aliases, commands);
     }
 

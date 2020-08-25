@@ -1,7 +1,6 @@
 package org.selyu.commands.api.parametric;
 
 import org.selyu.commands.api.argument.CommandArg;
-import java.lang.IllegalArgumentException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

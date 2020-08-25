@@ -1,8 +1,7 @@
 package org.selyu.commands.api.modifier;
 
-import org.selyu.commands.api.parametric.CommandParameter;
 import org.selyu.commands.api.command.CommandExecution;
-import java.lang.IllegalArgumentException;
+import org.selyu.commands.api.parametric.CommandParameter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

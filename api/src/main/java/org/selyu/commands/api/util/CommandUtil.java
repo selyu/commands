@@ -5,16 +5,16 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class CommandUtil {
     public String join(String[] strings, char separator) {
-        if(strings == null) {
+        if (strings == null) {
             return null;
         }
-        if(strings.length <= 0) {
+        if (strings.length <= 0) {
             return "";
         }
 
         StringBuilder builder = new StringBuilder(strings.length);
         // check first arg, don't add separator here just incase its the only argument
-        if(strings[0] != null) {
+        if (strings[0] != null) {
             builder.append(strings[0]);
         }
 
@@ -22,7 +22,7 @@ public class CommandUtil {
         for (int i = 1; i < strings.length; i++) {
             builder.append(separator);
             // Apache keeps separator even for null value
-            if(strings[i] != null) {
+            if (strings[i] != null) {
                 builder.append(strings[i]);
             }
         }
@@ -31,13 +31,13 @@ public class CommandUtil {
     }
 
     public void checkNotNull(Object object, String error) {
-        if(object == null) {
+        if (object == null) {
             throw new NullPointerException(error);
         }
     }
 
     public void checkState(boolean state, String error) {
-        if(!state) {
+        if (!state) {
             throw new IllegalStateException(error);
         }
     }

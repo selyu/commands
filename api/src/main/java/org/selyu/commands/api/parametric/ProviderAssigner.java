@@ -1,14 +1,14 @@
 package org.selyu.commands.api.parametric;
 
-import org.selyu.commands.api.command.AbstractCommandService;
+import org.selyu.commands.api.command.CommandService;
 import org.selyu.commands.api.command.WrappedCommand;
 import org.selyu.commands.api.exception.CommandStructureException;
 import org.selyu.commands.api.exception.MissingProviderException;
 
 public final class ProviderAssigner {
-    private final AbstractCommandService<?> commandService;
+    private final CommandService<?> commandService;
 
-    public ProviderAssigner(AbstractCommandService<?> commandService) {
+    public ProviderAssigner(CommandService<?> commandService) {
         this.commandService = commandService;
     }
 

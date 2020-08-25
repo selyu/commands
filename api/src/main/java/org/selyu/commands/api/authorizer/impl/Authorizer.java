@@ -7,10 +7,10 @@ import org.selyu.commands.api.sender.ICommandSender;
 
 import javax.annotation.Nonnull;
 
-public class AuthorizerImpl<T> implements IAuthorizer<T> {
+public class Authorizer<T> implements IAuthorizer<T> {
     private final Lang lang;
 
-    public AuthorizerImpl(@Nonnull Lang lang) {
+    public Authorizer(@Nonnull Lang lang) {
         this.lang = lang;
     }
 
@@ -18,7 +18,7 @@ public class AuthorizerImpl<T> implements IAuthorizer<T> {
     public boolean isAuthorized(@Nonnull ICommandSender<T> sender, @Nonnull WrappedCommand command) {
         if (command.getPermission() != null && command.getPermission().length() > 0) {
             if (!sender.hasPermission(command.getPermission())) {
-                sender.sendMessage(lang.get(Lang.Type.NO_PERMISSION));
+                sender.sendMessage(lang.get("no_permission"));
                 return false;
             }
         }

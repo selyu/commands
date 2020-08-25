@@ -7,7 +7,7 @@ import org.selyu.commands.api.annotation.Text;
 import org.selyu.commands.api.argument.ArgumentParser;
 import org.selyu.commands.api.argument.CommandArgs;
 import org.selyu.commands.api.authorizer.IAuthorizer;
-import org.selyu.commands.api.authorizer.impl.AuthorizerImpl;
+import org.selyu.commands.api.authorizer.impl.Authorizer;
 import org.selyu.commands.api.exception.*;
 import org.selyu.commands.api.flag.CommandFlag;
 import org.selyu.commands.api.flag.FlagExtractor;
@@ -35,10 +35,10 @@ import java.util.concurrent.ConcurrentMap;
 
 @SuppressWarnings("rawtypes")
 @Getter
-public abstract class AbstractCommandService<T extends CommandContainer> implements ICommandService {
+public abstract class CommandService<T extends CommandContainer> implements ICommandService {
     public static String DEFAULT_KEY = "COMMANDS_DEFAULT";
 
-    protected final Lang lang = new Lang();
+    protected final Lang lang = createLang();
     protected final HelpService helpService = new HelpService(this);
     protected final CommandExtractor extractor = new CommandExtractor(this);
     protected final ProviderAssigner providerAssigner = new ProviderAssigner(this);
@@ -46,9 +46,9 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     protected final ModifierService modifierService = new ModifierService();
     protected final ConcurrentMap<String, T> commands = new ConcurrentHashMap<>();
     protected final ConcurrentMap<Class<?>, BindingContainer<?>> bindings = new ConcurrentHashMap<>();
-    protected IAuthorizer authorizer = new AuthorizerImpl(lang);
+    protected IAuthorizer authorizer = new Authorizer(lang);
 
-    public AbstractCommandService() {
+    public CommandService() {
         BooleanProvider booleanProvider = new BooleanProvider(lang);
         bind(Boolean.class).toProvider(booleanProvider);
         bind(boolean.class).toProvider(booleanProvider);
@@ -73,6 +73,8 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
         bindDefaults();
     }
+
+    protected abstract Lang createLang();
 
     protected abstract void runAsync(@Nonnull Runnable runnable);
 
@@ -153,18 +155,18 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
                         helpService.sendHelpFor(sender, container);
                         return true;
                     }
-                    sender.sendMessage(lang.get(Lang.Type.UNKNOWN_SUB_COMMAND, args[0], label));
+                    sender.sendMessage(lang.get("unknown_sub_command", args[0], label));
                 } else {
                     if (container.isDefaultCommandIsHelp()) {
                         helpService.sendHelpFor(sender, container);
                     } else {
-                        sender.sendMessage(lang.get(Lang.Type.PLEASE_CHOOSE_SUB_COMMAND, label));
+                        sender.sendMessage(lang.get("choose_sub_command", label));
                     }
                 }
             }
             return true;
         } catch (Exception ex) {
-            sender.sendMessage(lang.get(Lang.Type.EXCEPTION));
+            sender.sendMessage(lang.get("exception"));
             ex.printStackTrace();
         }
 
@@ -211,7 +213,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
                         return;
                     }
                 }
-                sender.sendMessage(lang.get(Lang.Type.EXCEPTION));
+                sender.sendMessage(lang.get("exception"));
                 throw new CommandException("Failed to execute command '" + command.getName() + "' with arguments '" + CommandUtil.join(args, ' ') + " for sender " + sender.getName(), ex);
             }
         } catch (IllegalArgumentException ex) {

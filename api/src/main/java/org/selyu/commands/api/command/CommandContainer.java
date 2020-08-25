@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public abstract class CommandContainer {
-    protected final AbstractCommandService<?> commandService;
+    protected final CommandService<?> commandService;
     protected final Object object;
     protected final String name;
     protected final Set<String> aliases;
@@ -18,7 +18,7 @@ public abstract class CommandContainer {
     protected boolean overrideExistingCommands = true;
     protected boolean defaultCommandIsHelp = false;
 
-    public CommandContainer(AbstractCommandService<?> commandService, Object object, String name, Set<String> aliases, Map<String, WrappedCommand> commands) {
+    public CommandContainer(CommandService<?> commandService, Object object, String name, Set<String> aliases, Map<String, WrappedCommand> commands) {
         this.commandService = commandService;
         this.object = object;
         this.name = name;
@@ -50,7 +50,7 @@ public abstract class CommandContainer {
 
     private WrappedCommand calculateDefaultCommand() {
         for (WrappedCommand dc : commands.values()) {
-            if (dc.getName().length() == 0 || dc.getName().equals(AbstractCommandService.DEFAULT_KEY)) {
+            if (dc.getName().length() == 0 || dc.getName().equals(CommandService.DEFAULT_KEY)) {
                 // assume default!
                 return dc;
             }
@@ -102,7 +102,7 @@ public abstract class CommandContainer {
         return defaultCommand;
     }
 
-    public AbstractCommandService<?> getCommandService() {
+    public CommandService<?> getCommandService() {
         return commandService;
     }
 

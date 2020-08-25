@@ -1,7 +1,6 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.api.parametric.ICommandProvider;
 
@@ -13,10 +12,10 @@ import java.util.Collections;
 import java.util.List;
 
 public final class BooleanProvider implements ICommandProvider<Boolean> {
-    private final Lang lang;
     private static final List<String> SUGGEST = Collections.unmodifiableList(Arrays.asList("true", "false"));
     private static final List<String> SUGGEST_TRUE = Collections.singletonList("true");
     private static final List<String> SUGGEST_FALSE = Collections.singletonList("false");
+    private final Lang lang;
 
     public BooleanProvider(@Nonnull Lang lang) {
         this.lang = lang;
@@ -47,7 +46,7 @@ public final class BooleanProvider implements ICommandProvider<Boolean> {
         try {
             return Boolean.parseBoolean(s);
         } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException(lang.get(Lang.Type.INVALID_BOOLEAN, s));
+            throw new IllegalArgumentException(lang.get("invalid_boolean", s));
         }
     }
 

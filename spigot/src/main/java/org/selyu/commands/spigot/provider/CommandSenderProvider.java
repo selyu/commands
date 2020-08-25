@@ -1,9 +1,8 @@
 package org.selyu.commands.spigot.provider;
 
-import org.selyu.commands.api.argument.CommandArg;
-import java.lang.IllegalArgumentException;
-import org.selyu.commands.api.parametric.ICommandProvider;
 import org.bukkit.command.CommandSender;
+import org.selyu.commands.api.argument.CommandArg;
+import org.selyu.commands.api.parametric.ICommandProvider;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;

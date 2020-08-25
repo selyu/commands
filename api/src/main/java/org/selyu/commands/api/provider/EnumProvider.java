@@ -1,7 +1,6 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.api.parametric.ICommandProvider;
 import org.selyu.commands.api.util.CommandUtil;
@@ -21,6 +20,10 @@ public final class EnumProvider<T extends Enum<T>> implements ICommandProvider<T
     public EnumProvider(@Nonnull Lang lang, @Nonnull Class<T> enumClass) {
         this.lang = lang;
         this.enumClass = enumClass;
+    }
+
+    private static String simplify(String t) {
+        return NON_ALPHANUMERIC.matcher(t.toLowerCase()).replaceAll("");
     }
 
     @Override
@@ -43,7 +46,7 @@ public final class EnumProvider<T extends Enum<T>> implements ICommandProvider<T
                 return entry;
             }
         }
-        throw new IllegalArgumentException(lang.get(Lang.Type.INVALID_ENUM_VALUE, argumentDescription(), CommandUtil.join(getSuggestions("").toArray(new String[0]), ' ')));
+        throw new IllegalArgumentException(lang.get("invalid_enum_value", argumentDescription(), CommandUtil.join(getSuggestions("").toArray(new String[0]), ' ')));
     }
 
     @Nonnull
@@ -66,9 +69,5 @@ public final class EnumProvider<T extends Enum<T>> implements ICommandProvider<T
         }
 
         return suggestions;
-    }
-
-    private static String simplify(String t) {
-        return NON_ALPHANUMERIC.matcher(t.toLowerCase()).replaceAll("");
     }
 }

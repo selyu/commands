@@ -12,9 +12,9 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public final class CommandExtractor {
-    private final AbstractCommandService<?> commandService;
+    private final CommandService<?> commandService;
 
-    public CommandExtractor(AbstractCommandService<?> commandService) {
+    public CommandExtractor(CommandService<?> commandService) {
         this.commandService = commandService;
     }
 

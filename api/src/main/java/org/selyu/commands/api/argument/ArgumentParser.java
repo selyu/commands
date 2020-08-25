@@ -2,11 +2,10 @@ package org.selyu.commands.api.argument;
 
 import org.selyu.commands.api.annotation.Flag;
 import org.selyu.commands.api.command.CommandExecution;
-import org.selyu.commands.api.flag.CommandFlag;
+import org.selyu.commands.api.command.CommandService;
 import org.selyu.commands.api.command.WrappedCommand;
-import org.selyu.commands.api.command.AbstractCommandService;
 import org.selyu.commands.api.exception.CommandArgumentException;
-import java.lang.IllegalArgumentException;
+import org.selyu.commands.api.flag.CommandFlag;
 import org.selyu.commands.api.parametric.CommandParameter;
 import org.selyu.commands.api.parametric.ICommandProvider;
 import org.selyu.commands.api.util.CommandUtil;
@@ -16,9 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ArgumentParser {
-    private final AbstractCommandService<?> commandService;
+    private final CommandService<?> commandService;
 
-    public ArgumentParser(AbstractCommandService<?> commandService) {
+    public ArgumentParser(CommandService<?> commandService) {
         this.commandService = commandService;
     }
 
@@ -37,7 +36,7 @@ public final class ArgumentParser {
                             if (endIndex != i) {
                                 builder.append(' ');
                             }
-                            builder.append(arg2.substring(endIndex == i ? 1 : 0, arg2.length() - 1));
+                            builder.append(arg2, endIndex == i ? 1 : 0, arg2.length() - 1);
                             break;
                         } else if (endIndex == i) {
                             builder.append(arg2.substring(1));

@@ -1,7 +1,6 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.api.parametric.ICommandProvider;
 
@@ -40,7 +39,7 @@ public final class DateProvider implements ICommandProvider<Date> {
         try {
             return FORMAT.parse(s);
         } catch (ParseException e) {
-            throw new IllegalArgumentException(lang.get(Lang.Type.INVALID_DATE, FORMAT_STR));
+            throw new IllegalArgumentException(lang.get("invalid_date", FORMAT_STR));
         }
     }
 

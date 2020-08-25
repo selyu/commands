@@ -3,7 +3,6 @@ package org.selyu.commands.api.modifier;
 import org.selyu.commands.api.annotation.Classifier;
 import org.selyu.commands.api.annotation.Modifier;
 import org.selyu.commands.api.command.CommandExecution;
-import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.parametric.CommandParameter;
 import org.selyu.commands.api.util.CommandUtil;
 

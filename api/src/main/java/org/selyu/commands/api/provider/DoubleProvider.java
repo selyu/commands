@@ -1,7 +1,6 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.api.parametric.ICommandProvider;
 
@@ -45,7 +44,7 @@ public final class DoubleProvider implements ICommandProvider<Double> {
         try {
             return Double.parseDouble(s);
         } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException(lang.get(Lang.Type.INVALID_DOUBLE, s));
+            throw new IllegalArgumentException(lang.get("invalid_double", s));
         }
     }
 

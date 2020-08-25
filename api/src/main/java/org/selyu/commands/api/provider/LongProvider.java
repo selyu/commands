@@ -1,7 +1,6 @@
 package org.selyu.commands.api.provider;
 
 import org.selyu.commands.api.argument.CommandArg;
-import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.api.parametric.ICommandProvider;
 
@@ -45,7 +44,7 @@ public final class LongProvider implements ICommandProvider<Long> {
         try {
             return Long.parseLong(s);
         } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException(lang.get(Lang.Type.INVALID_LONG, s));
+            throw new IllegalArgumentException(lang.get("invalid_long", s));
         }
     }
 

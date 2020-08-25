@@ -3,10 +3,8 @@ package org.selyu.commands.spigot.provider;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.selyu.commands.api.argument.CommandArg;
-import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.parametric.ICommandProvider;
 import org.selyu.commands.spigot.SpigotCommandService;
-import org.selyu.commands.spigot.lang.SpigotLang;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,7 +33,7 @@ public final class ConsoleCommandSenderProvider implements ICommandProvider<Cons
     @Override
     public ConsoleCommandSender provide(@Nonnull CommandArg arg, @Nonnull List<? extends Annotation> annotations) throws IllegalArgumentException {
         if (arg.getSender().getInstance() instanceof Player) {
-            throw new IllegalArgumentException(service.getLang().get(SpigotLang.Type.CONSOLE_ONLY_COMMAND));
+            throw new IllegalArgumentException(service.getLang().get("spigot.console_only_command"));
         }
         return (ConsoleCommandSender) arg.getSender().getInstance();
     }

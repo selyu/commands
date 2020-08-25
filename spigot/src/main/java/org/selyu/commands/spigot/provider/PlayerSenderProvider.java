@@ -2,10 +2,8 @@ package org.selyu.commands.spigot.provider;
 
 import org.bukkit.entity.Player;
 import org.selyu.commands.api.argument.CommandArg;
-import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.parametric.ICommandProvider;
 import org.selyu.commands.spigot.SpigotCommandService;
-import org.selyu.commands.spigot.lang.SpigotLang;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,7 +34,7 @@ public final class PlayerSenderProvider implements ICommandProvider<Player> {
         if (arg.getSender().getInstance() instanceof Player) {
             return (Player) arg.getSender().getInstance();
         }
-        throw new IllegalArgumentException(service.getLang().get(SpigotLang.Type.PLAYER_ONLY_COMMAND));
+        throw new IllegalArgumentException(service.getLang().get("spigot.player_only_command"));
     }
 
     @Nonnull

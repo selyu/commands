@@ -3,10 +3,8 @@ package org.selyu.commands.spigot.provider;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.selyu.commands.api.argument.CommandArg;
-import java.lang.IllegalArgumentException;
 import org.selyu.commands.api.parametric.ICommandProvider;
 import org.selyu.commands.spigot.SpigotCommandService;
-import org.selyu.commands.spigot.lang.SpigotLang;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
@@ -38,7 +36,7 @@ public final class PlayerProvider implements ICommandProvider<Player> {
         if (p != null) {
             return p;
         }
-        throw new IllegalArgumentException(service.getLang().get(SpigotLang.Type.PLAYER_NOT_FOUND, name));
+        throw new IllegalArgumentException(service.getLang().get("spigot.player_not_found", name));
     }
 
     @Nonnull

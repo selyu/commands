@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Getter
 public final class WrappedCommand {
-    private final AbstractCommandService<?> commandService;
+    private final CommandService<?> commandService;
     private final String name;
     private final Set<String> allAliases;
     private final Set<String> aliases;
@@ -30,7 +30,7 @@ public final class WrappedCommand {
     private final boolean requiresAsync;
     private final String generatedUsage;
 
-    public WrappedCommand(AbstractCommandService<?> commandService, String name, Set<String> aliases, String description, String usage, String permission, Object handler, Method method, boolean async) throws MissingProviderException, CommandStructureException {
+    public WrappedCommand(CommandService<?> commandService, String name, Set<String> aliases, String description, String usage, String permission, Object handler, Method method, boolean async) throws MissingProviderException, CommandStructureException {
         this.commandService = commandService;
         this.name = name;
         this.aliases = aliases;
@@ -48,7 +48,7 @@ public final class WrappedCommand {
         this.requiresAsync = calculateRequiresAsync();
         this.generatedUsage = generateUsage();
         this.allAliases = aliases;
-        if (name.length() > 0 && !name.equals(AbstractCommandService.DEFAULT_KEY)) {
+        if (name.length() > 0 && !name.equals(CommandService.DEFAULT_KEY)) {
             allAliases.add(name);
         }
     }
@@ -102,7 +102,7 @@ public final class WrappedCommand {
     }
 
     private boolean calculateRequiresAsync() {
-        if(async) {
+        if (async) {
             return true;
         }
 

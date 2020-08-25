@@ -1,7 +1,7 @@
 package org.selyu.commands.api.argument;
 
 import lombok.Getter;
-import org.selyu.commands.api.command.AbstractCommandService;
+import org.selyu.commands.api.command.CommandService;
 import org.selyu.commands.api.flag.CommandFlag;
 import org.selyu.commands.api.sender.ICommandSender;
 import org.selyu.commands.api.util.CommandUtil;
@@ -14,7 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Getter
 public final class CommandArgs {
-    private final AbstractCommandService<?> commandService;
+    private final CommandService<?> commandService;
     private final ICommandSender<?> sender;
     private final List<String> args;
     private final String label;
@@ -22,7 +22,7 @@ public final class CommandArgs {
     private final ReentrantLock lock = new ReentrantLock();
     private int index = 0;
 
-    public CommandArgs(@Nonnull AbstractCommandService<?> commandService, @Nonnull ICommandSender<?> sender, @Nonnull String label, @Nonnull List<String> args,
+    public CommandArgs(@Nonnull CommandService<?> commandService, @Nonnull ICommandSender<?> sender, @Nonnull String label, @Nonnull List<String> args,
                        @Nonnull Map<Character, CommandFlag> flags) {
         CommandUtil.checkNotNull(commandService, "CommandService cannot be null");
         CommandUtil.checkNotNull(sender, "CommandSender cannot be null");

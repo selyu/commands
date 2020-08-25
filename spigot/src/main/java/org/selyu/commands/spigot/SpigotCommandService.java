@@ -9,9 +9,9 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.selyu.commands.api.annotation.Sender;
-import org.selyu.commands.api.command.AbstractCommandService;
+import org.selyu.commands.api.command.CommandService;
 import org.selyu.commands.api.command.WrappedCommand;
-import org.selyu.commands.spigot.lang.SpigotLang;
+import org.selyu.commands.api.lang.Lang;
 import org.selyu.commands.spigot.provider.CommandSenderProvider;
 import org.selyu.commands.spigot.provider.ConsoleCommandSenderProvider;
 import org.selyu.commands.spigot.provider.PlayerProvider;
@@ -21,10 +21,9 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.Set;
 
-public final class SpigotCommandService extends AbstractCommandService<SpigotCommandContainer> {
+public final class SpigotCommandService extends CommandService<SpigotCommandContainer> {
     private final JavaPlugin plugin;
     private final SpigotCommandRegistry registry = new SpigotCommandRegistry(this);
-    private final SpigotLang spigotLang = new SpigotLang();
 
     public SpigotCommandService(@Nonnull JavaPlugin plugin) {
         this.plugin = plugin;
@@ -43,6 +42,11 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7&m--------------------------------"));
             }
         });
+    }
+
+    @Override
+    protected Lang createLang() {
+        return new SpigotLang();
     }
 
     @Override
@@ -70,12 +74,6 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
         for (SpigotCommandContainer value : commands.values()) {
             registry.register(value, true);
         }
-    }
-
-    @Override
-    @Nonnull
-    public SpigotLang getLang() {
-        return spigotLang;
     }
 
     @Nonnull
