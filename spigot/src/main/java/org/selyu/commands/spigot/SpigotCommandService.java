@@ -12,12 +12,14 @@ import org.selyu.commands.api.annotation.Sender;
 import org.selyu.commands.api.command.CommandService;
 import org.selyu.commands.api.command.WrappedCommand;
 import org.selyu.commands.api.lang.Lang;
+import org.selyu.commands.spigot.annotation.Permission;
 import org.selyu.commands.spigot.provider.CommandSenderProvider;
 import org.selyu.commands.spigot.provider.ConsoleCommandSenderProvider;
 import org.selyu.commands.spigot.provider.PlayerProvider;
 import org.selyu.commands.spigot.provider.PlayerSenderProvider;
 
 import javax.annotation.Nonnull;
+import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +44,18 @@ public final class SpigotCommandService extends CommandService<SpigotCommandCont
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7&m--------------------------------"));
             }
         });
+
+        authorizer = (sender, command) -> {
+            for (Annotation annotation : command.getAnnotations()) {
+                if (annotation instanceof Permission) {
+                    if (!sender.hasPermission(((Permission) annotation).value())) {
+                        sender.sendMessage(getLang().get("spigot.no_permission"));
+                        return false;
+                    }
+                }
+            }
+            return true;
+        };
     }
 
     @Override

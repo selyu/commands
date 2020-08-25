@@ -1,7 +1,6 @@
 package org.selyu.commands.api.command;
 
 import org.selyu.commands.api.annotation.Command;
-import org.selyu.commands.api.annotation.Require;
 import org.selyu.commands.api.exception.CommandRegistrationException;
 import org.selyu.commands.api.exception.CommandStructureException;
 import org.selyu.commands.api.exception.MissingProviderException;
@@ -41,14 +40,9 @@ public final class CommandExtractor {
                 throw new CommandRegistrationException("Couldn't access method " + method.getName());
             }
             Command command = method.getAnnotation(Command.class);
-            String perm = "";
-            if (method.isAnnotationPresent(Require.class)) {
-                Require require = method.getAnnotation(Require.class);
-                perm = require.value();
-            }
             WrappedCommand wrappedCommand = new WrappedCommand(
-                    commandService, command.name(), new HashSet<>(Arrays.asList(command.aliases())), command.desc(), command.usage(),
-                    perm, handler, method, command.async()
+                    commandService, command.name(), new HashSet<>(Arrays.asList(command.aliases())),
+                    command.desc(), command.usage(), handler, method, command.async(), method.getDeclaredAnnotations()
             );
             return Optional.of(wrappedCommand);
         }

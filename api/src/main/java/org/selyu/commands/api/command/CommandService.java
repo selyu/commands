@@ -7,7 +7,6 @@ import org.selyu.commands.api.annotation.Text;
 import org.selyu.commands.api.argument.ArgumentParser;
 import org.selyu.commands.api.argument.CommandArgs;
 import org.selyu.commands.api.authorizer.IAuthorizer;
-import org.selyu.commands.api.authorizer.impl.Authorizer;
 import org.selyu.commands.api.exception.*;
 import org.selyu.commands.api.flag.CommandFlag;
 import org.selyu.commands.api.flag.FlagExtractor;
@@ -46,7 +45,7 @@ public abstract class CommandService<T extends CommandContainer> implements ICom
     protected final ModifierService modifierService = new ModifierService();
     protected final ConcurrentMap<String, T> commands = new ConcurrentHashMap<>();
     protected final ConcurrentMap<Class<?>, BindingContainer<?>> bindings = new ConcurrentHashMap<>();
-    protected IAuthorizer authorizer = new Authorizer(lang);
+    protected IAuthorizer authorizer = (sender, command) -> true;
 
     public CommandService() {
         BooleanProvider booleanProvider = new BooleanProvider(lang);

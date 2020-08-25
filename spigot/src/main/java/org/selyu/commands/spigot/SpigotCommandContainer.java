@@ -8,8 +8,10 @@ import org.bukkit.plugin.Plugin;
 import org.selyu.commands.api.command.CommandContainer;
 import org.selyu.commands.api.command.CommandService;
 import org.selyu.commands.api.command.WrappedCommand;
+import org.selyu.commands.spigot.annotation.Permission;
 
 import javax.annotation.Nonnull;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,20 @@ import java.util.Set;
 final class SpigotCommandContainer extends CommandContainer {
     SpigotCommandContainer(CommandService<?> commandService, Object object, String name, Set<String> aliases, Map<String, WrappedCommand> commands) {
         super(commandService, object, name, aliases, commands);
+    }
+
+    private String getPermission() {
+        if (defaultCommand == null) {
+            return "";
+        }
+
+        for (Annotation annotation : defaultCommand.getAnnotations()) {
+            if (annotation instanceof Permission) {
+                return ((Permission) annotation).value();
+            }
+        }
+
+        return "";
     }
 
     public final class SpigotCommand extends Command implements PluginIdentifiableCommand {
@@ -29,7 +45,7 @@ final class SpigotCommandContainer extends CommandContainer {
             if (defaultCommand != null) {
                 setUsage("/" + name + " " + defaultCommand.getGeneratedUsage());
                 setDescription(defaultCommand.getDescription());
-                setPermission(defaultCommand.getPermission());
+                setPermission(SpigotCommandContainer.this.getPermission());
             }
         }
 

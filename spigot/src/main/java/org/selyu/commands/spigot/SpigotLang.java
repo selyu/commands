@@ -22,7 +22,8 @@ final class SpigotLang extends Lang {
     private enum Messages {
         PLAYER_ONLY_COMMAND("player_only_command", "This is a player only command."),
         CONSOLE_ONLY_COMMAND("console_only_command", "This is a console only command."),
-        PLAYER_NOT_FOUND("player_not_found", "The player ''{0}'' isn''t online.");
+        PLAYER_NOT_FOUND("player_not_found", "The player ''{0}'' isn''t online."),
+        NO_PERMISSION("no_permission", "You do not have permission to execute this command.");
 
         final String key;
         final String defaultMessage;

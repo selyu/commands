@@ -7,6 +7,7 @@ import org.selyu.commands.api.parametric.CommandParameter;
 import org.selyu.commands.api.parametric.CommandParameters;
 import org.selyu.commands.api.parametric.ICommandProvider;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -18,7 +19,6 @@ public final class WrappedCommand {
     private final Set<String> aliases;
     private final String description;
     private final String usage;
-    private final String permission;
     private final Object handler;
     private final Method method;
     private final boolean async;
@@ -29,14 +29,15 @@ public final class WrappedCommand {
     private final int requiredArgCount;
     private final boolean requiresAsync;
     private final String generatedUsage;
+    private final Annotation[] annotations;
 
-    public WrappedCommand(CommandService<?> commandService, String name, Set<String> aliases, String description, String usage, String permission, Object handler, Method method, boolean async) throws MissingProviderException, CommandStructureException {
+    public WrappedCommand(CommandService<?> commandService, String name, Set<String> aliases, String description, String usage, Object handler, Method method, boolean async, Annotation[] annotations) throws MissingProviderException, CommandStructureException {
         this.commandService = commandService;
         this.name = name;
         this.aliases = aliases;
         this.description = description;
         this.usage = usage;
-        this.permission = permission;
+        this.annotations = annotations;
         this.handler = handler;
         this.method = method;
         this.async = async;

@@ -43,7 +43,6 @@ public class Lang {
         EXCEPTION("exception", "An exception occurred while performing this command, Please contact an administrator."),
         UNKNOWN_SUB_COMMAND("unknown_sub_command", "Unknown sub-command: {0}.  Use '{1} help' to see available commands."),
         PLEASE_CHOOSE_SUB_COMMAND("choose_sub_command", "Please choose a sub-command.  Use '{0} help' to see available commands."),
-        NO_PERMISSION("no_permission", "You do not have permission to execute this command."),
         USAGE("usage_format", "Command Usage: {0}"),
 
         INVALID_BOOLEAN("invalid_boolean", "Required: Boolean (true/false), Given: ''{0}''"),
