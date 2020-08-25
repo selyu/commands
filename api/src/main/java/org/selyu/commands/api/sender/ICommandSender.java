@@ -8,8 +8,6 @@ public interface ICommandSender<T> {
 
     void sendMessage(@Nonnull String message);
 
-    boolean hasPermission(@Nonnull String permission);
-
     @Nonnull
     T getInstance();
 }

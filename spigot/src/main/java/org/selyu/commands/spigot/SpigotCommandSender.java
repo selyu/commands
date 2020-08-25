@@ -23,7 +23,6 @@ final class SpigotCommandSender implements ICommandSender<CommandSender> {
         commandSender.sendMessage(message);
     }
 
-    @Override
     public boolean hasPermission(@Nonnull String permission) {
         return commandSender.hasPermission(permission);
     }

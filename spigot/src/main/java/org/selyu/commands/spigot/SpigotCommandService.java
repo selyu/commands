@@ -48,7 +48,7 @@ public final class SpigotCommandService extends CommandService<SpigotCommandCont
         authorizer = (sender, command) -> {
             for (Annotation annotation : command.getAnnotations()) {
                 if (annotation instanceof Permission) {
-                    if (!sender.hasPermission(((Permission) annotation).value())) {
+                    if (!((CommandSender) sender.getInstance()).hasPermission(((Permission) annotation).value())) {
                         sender.sendMessage(getLang().get("spigot.no_permission"));
                         return false;
                     }
