@@ -8,26 +8,30 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.selyu.commands.api.annotation.Sender;
-import org.selyu.commands.api.command.CommandService;
-import org.selyu.commands.api.command.WrappedCommand;
-import org.selyu.commands.api.lang.Lang;
+import org.jetbrains.annotations.NotNull;
+import org.selyu.commands.core.annotation.Sender;
+import org.selyu.commands.core.command.AbstractCommandService;
+import org.selyu.commands.core.command.WrappedCommand;
+import org.selyu.commands.core.lang.Lang;
 import org.selyu.commands.spigot.annotation.Permission;
 import org.selyu.commands.spigot.provider.CommandSenderProvider;
 import org.selyu.commands.spigot.provider.ConsoleCommandSenderProvider;
 import org.selyu.commands.spigot.provider.PlayerProvider;
 import org.selyu.commands.spigot.provider.PlayerSenderProvider;
 
-import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Set;
 
-public final class SpigotCommandService extends CommandService<SpigotCommandContainer> {
+import static java.util.Objects.requireNonNull;
+
+public final class SpigotCommandService extends AbstractCommandService<SpigotCommandContainer> {
     private final JavaPlugin plugin;
     private final SpigotCommandRegistry registry = new SpigotCommandRegistry(this);
 
-    public SpigotCommandService(@Nonnull JavaPlugin plugin) {
+    public SpigotCommandService(@NotNull JavaPlugin plugin) {
+        requireNonNull(plugin, "plugin");
+
         this.plugin = plugin;
         helpService.setHelpFormatter((s, container) -> {
             if (s.getInstance() instanceof CommandSender) {
@@ -64,7 +68,7 @@ public final class SpigotCommandService extends CommandService<SpigotCommandCont
     }
 
     @Override
-    protected void runAsync(@Nonnull Runnable runnable) {
+    protected void runAsync(@NotNull Runnable runnable) {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
     }
 
@@ -77,9 +81,9 @@ public final class SpigotCommandService extends CommandService<SpigotCommandCont
         bind(Player.class).toProvider(new PlayerProvider(this));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    protected SpigotCommandContainer createContainer(@Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands) {
+    protected SpigotCommandContainer createContainer(@NotNull Object object, @NotNull String name, @NotNull Set<String> aliases, @NotNull Map<String, WrappedCommand> commands) {
         return new SpigotCommandContainer(this, object, name, aliases, commands);
     }
 
@@ -90,7 +94,7 @@ public final class SpigotCommandService extends CommandService<SpigotCommandCont
         }
     }
 
-    @Nonnull
+    @NotNull
     JavaPlugin getPlugin() {
         return plugin;
     }

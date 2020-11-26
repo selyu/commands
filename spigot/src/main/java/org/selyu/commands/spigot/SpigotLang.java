@@ -1,7 +1,7 @@
 package org.selyu.commands.spigot;
 
 import net.md_5.bungee.api.ChatColor;
-import org.selyu.commands.api.lang.Lang;
+import org.selyu.commands.core.lang.Lang;
 
 import static java.util.Objects.requireNonNull;
 

@@ -5,12 +5,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.plugin.Plugin;
-import org.selyu.commands.api.command.CommandContainer;
-import org.selyu.commands.api.command.CommandService;
-import org.selyu.commands.api.command.WrappedCommand;
+import org.jetbrains.annotations.NotNull;
+import org.selyu.commands.core.command.CommandContainer;
+import org.selyu.commands.core.command.AbstractCommandService;
+import org.selyu.commands.core.command.WrappedCommand;
 import org.selyu.commands.spigot.annotation.Permission;
 
-import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 final class SpigotCommandContainer extends CommandContainer {
-    SpigotCommandContainer(CommandService<?> commandService, Object object, String name, Set<String> aliases, Map<String, WrappedCommand> commands) {
+    SpigotCommandContainer(AbstractCommandService<?> commandService, Object object, String name, Set<String> aliases, Map<String, WrappedCommand> commands) {
         super(commandService, object, name, aliases, commands);
     }
 
@@ -39,7 +39,7 @@ final class SpigotCommandContainer extends CommandContainer {
     public final class SpigotCommand extends Command implements PluginIdentifiableCommand {
         private final SpigotCommandService commandService;
 
-        public SpigotCommand(@Nonnull SpigotCommandService commandService) {
+        public SpigotCommand(@NotNull SpigotCommandService commandService) {
             super(name, "", "/" + name, new ArrayList<>(aliases));
             this.commandService = commandService;
             if (defaultCommand != null) {
@@ -50,26 +50,26 @@ final class SpigotCommandContainer extends CommandContainer {
         }
 
         @Override
-        public boolean execute(CommandSender commandSender, String s, String[] strings) {
+        public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, String[] strings) {
             if (getName().equalsIgnoreCase(SpigotCommandContainer.this.getName())) {
-                SpigotCommandSender spigotCommandSender = new SpigotCommandSender(commandSender);
+                SpigotCommandExecutor spigotCommandSender = new SpigotCommandExecutor(commandSender);
                 return commandService.executeCommand(spigotCommandSender, SpigotCommandContainer.this, s, strings);
             }
             return false;
         }
 
         @Override
-        public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+        public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, String[] args) throws IllegalArgumentException {
             return tabCompleter.onTabComplete(getName(), args);
         }
 
         @Override
-        public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location) throws IllegalArgumentException {
+        public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, String[] args, Location location) throws IllegalArgumentException {
             return tabCompleter.onTabComplete(getName(), args);
         }
 
         @Override
-        public Plugin getPlugin() {
+        public @NotNull Plugin getPlugin() {
             return commandService.getPlugin();
         }
     }

@@ -1,30 +1,31 @@
-package org.selyu.commands.spigot.provider;
+package org.selyu.commands.core.provider.impl;
 
-import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.selyu.commands.core.argument.CommandArg;
+import org.selyu.commands.core.argument.CommandArgs;
 import org.selyu.commands.core.provider.IParameterProvider;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
-public final class CommandSenderProvider implements IParameterProvider<CommandSender> {
+public final class CommandArgsProvider implements IParameterProvider<CommandArgs> {
     @Override
     public boolean consumesArgument() {
         return false;
     }
 
-    @NotNull
+    @Nullable
     @Override
-    public CommandSender provide(@NotNull CommandArg arg, @NotNull List<? extends Annotation> annotations) throws IllegalArgumentException {
-        return (CommandSender) arg.getSender().getInstance();
+    public CommandArgs provide(@NotNull CommandArg arg, @NotNull List<? extends Annotation> annotations) {
+        return arg.getArgs();
     }
 
     @NotNull
     @Override
     public String argumentDescription() {
-        return "sender";
+        return "args";
     }
 
     @NotNull

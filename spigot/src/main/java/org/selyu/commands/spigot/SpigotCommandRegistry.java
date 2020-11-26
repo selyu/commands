@@ -3,9 +3,9 @@ package org.selyu.commands.spigot;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
-import org.selyu.commands.api.exception.CommandRegistrationException;
+import org.jetbrains.annotations.NotNull;
+import org.selyu.commands.core.exception.CommandRegistrationException;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +50,7 @@ final class SpigotCommandRegistry {
         return result;
     }
 
-    public void register(@Nonnull SpigotCommandContainer container, boolean unregisterExisting) throws CommandRegistrationException {
+    public void register(@NotNull SpigotCommandContainer container, boolean unregisterExisting) throws CommandRegistrationException {
         if (unregisterExisting) {
             try {
                 Map<String, Command> knownCommands = getKnownCommands();
