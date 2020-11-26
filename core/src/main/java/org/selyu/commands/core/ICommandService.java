@@ -1,17 +1,17 @@
 package org.selyu.commands.core;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.selyu.commands.core.annotation.Command;
 import org.selyu.commands.core.annotation.Modifier;
-import org.selyu.commands.core.authorizer.IAuthorizer;
 import org.selyu.commands.core.command.CommandContainer;
 import org.selyu.commands.core.help.IHelpFormatter;
 import org.selyu.commands.core.lang.Lang;
 import org.selyu.commands.core.modifier.ICommandModifier;
-import org.selyu.commands.core.provider.IParameterProvider;
 import org.selyu.commands.core.parametric.binder.CommandBinder;
+import org.selyu.commands.core.preprocessor.ICommandPreProcessor;
+import org.selyu.commands.core.provider.IParameterProvider;
 
-import org.jetbrains.annotations.Nullable;
 import java.lang.annotation.Annotation;
 
 public interface ICommandService {
@@ -72,13 +72,7 @@ public interface ICommandService {
     @Nullable
     CommandContainer get(@NotNull String name);
 
-    /**
-     * Set the authorizer that is used.
-     *
-     * @param authorizer A {@link IAuthorizer} instance to be used for
-     *                   checking authorization for command execution
-     */
-    void setAuthorizer(@NotNull IAuthorizer<?> authorizer);
+    void addPreProcessor(@NotNull ICommandPreProcessor preProcessor);
 
     /**
      * Set the help formatter

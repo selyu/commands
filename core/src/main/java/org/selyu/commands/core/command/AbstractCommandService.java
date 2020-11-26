@@ -7,8 +7,8 @@ import org.selyu.commands.core.ICommandService;
 import org.selyu.commands.core.annotation.Text;
 import org.selyu.commands.core.argument.ArgumentParser;
 import org.selyu.commands.core.argument.CommandArgs;
-import org.selyu.commands.core.authorizer.IAuthorizer;
 import org.selyu.commands.core.exception.*;
+import org.selyu.commands.core.executor.ICommandExecutor;
 import org.selyu.commands.core.flag.CommandFlag;
 import org.selyu.commands.core.flag.FlagExtractor;
 import org.selyu.commands.core.help.HelpService;
@@ -18,11 +18,12 @@ import org.selyu.commands.core.modifier.ICommandModifier;
 import org.selyu.commands.core.modifier.ModifierService;
 import org.selyu.commands.core.parametric.BindingContainer;
 import org.selyu.commands.core.parametric.CommandBinding;
-import org.selyu.commands.core.provider.IParameterProvider;
 import org.selyu.commands.core.parametric.ProviderAssigner;
 import org.selyu.commands.core.parametric.binder.CommandBinder;
+import org.selyu.commands.core.preprocessor.ICommandPreProcessor;
+import org.selyu.commands.core.preprocessor.ProcessorResult;
+import org.selyu.commands.core.provider.IParameterProvider;
 import org.selyu.commands.core.provider.impl.*;
-import org.selyu.commands.core.executor.ICommandExecutor;
 import org.selyu.commands.core.util.CommandUtil;
 
 import java.lang.annotation.Annotation;
@@ -31,7 +32,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-@SuppressWarnings("rawtypes")
+import static java.util.Objects.requireNonNull;
+
 @Getter
 public abstract class AbstractCommandService<T extends CommandContainer> implements ICommandService {
     public static String DEFAULT_KEY = "COMMANDS_DEFAULT";
@@ -44,7 +46,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     protected final ModifierService modifierService = new ModifierService();
     protected final ConcurrentMap<String, T> commands = new ConcurrentHashMap<>();
     protected final ConcurrentMap<Class<?>, BindingContainer<?>> bindings = new ConcurrentHashMap<>();
-    protected IAuthorizer authorizer = (sender, command) -> true;
+    protected final Set<ICommandPreProcessor> preProcessors = new HashSet<>();
 
     public AbstractCommandService() {
         BooleanProvider booleanProvider = new BooleanProvider(lang);
@@ -67,34 +69,28 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
         bind(String.class).annotatedWith(Text.class).toProvider(new GreedyStringProvider());
         bind(CommandArgs.class).toProvider(new CommandArgsProvider());
 
-        bindDefaults();
+        addDefaults();
     }
 
     protected abstract Lang createLang();
 
     protected abstract void runAsync(@NotNull Runnable runnable);
 
-    protected abstract void bindDefaults();
+    protected abstract void addDefaults();
 
     @NotNull
     protected abstract T createContainer(@NotNull Object object, @NotNull String name, @NotNull Set<String> aliases, @NotNull Map<String, WrappedCommand> commands);
 
     @Override
-    public final void setAuthorizer(@NotNull IAuthorizer<?> authorizer) {
-        Objects.requireNonNull(authorizer, "Authorizer cannot be null");
-        this.authorizer = authorizer;
-    }
-
-    @Override
     public void setHelpFormatter(@NotNull IHelpFormatter helpFormatter) {
-        Objects.requireNonNull(authorizer, "HelpFormatter cannot be null");
+        requireNonNull(helpFormatter, "HelpFormatter cannot be null");
         helpService.setHelpFormatter(helpFormatter);
     }
 
     @Override
     public final CommandContainer register(@NotNull Object handler, @NotNull String name, @Nullable String... aliases) throws CommandRegistrationException {
-        Objects.requireNonNull(handler, "Handler object cannot be null");
-        Objects.requireNonNull(name, "Name cannot be null");
+        requireNonNull(handler, "Handler object cannot be null");
+        requireNonNull(name, "Name cannot be null");
         CommandUtil.checkState(name.length() > 0, "Name cannot be empty (must be > 0 characters in length)");
         Set<String> aliasesSet = new HashSet<>();
         if (aliases != null) {
@@ -116,8 +112,8 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
     @Override
     public final CommandContainer registerSub(@NotNull CommandContainer root, @NotNull Object handler) {
-        Objects.requireNonNull(root, "Root command container cannot be null");
-        Objects.requireNonNull(handler, "Handler object cannot be null");
+        requireNonNull(root, "Root command container cannot be null");
+        requireNonNull(handler, "Handler object cannot be null");
         try {
             Map<String, WrappedCommand> extractCommands = extractor.extractCommands(handler);
             extractCommands.forEach((s, d) -> root.getCommands().put(s, d));
@@ -132,6 +128,12 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
         modifierService.registerModifier(annotation, type, modifier);
     }
 
+    @Override
+    public void addPreProcessor(@NotNull ICommandPreProcessor preProcessor) {
+        requireNonNull(preProcessor, "preProcessor");
+        preProcessors.add(preProcessor);
+    }
+
     public final boolean executeCommand(@NotNull ICommandExecutor<?> sender, @NotNull T container, @NotNull String label, @NotNull String[] args) {
         try {
             Map.Entry<WrappedCommand, String[]> data = container.getCommand(args);
@@ -143,7 +145,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
                         return true;
                     }
                 }
-                checkAuthorization(sender, data.getKey(), label, data.getValue());
+                execute(sender, data.getKey(), label, data.getValue());
             } else {
                 if (args.length > 0) {
                     if (args[args.length - 1].equalsIgnoreCase("help")) {
@@ -169,17 +171,26 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
         return false;
     }
 
-    @SuppressWarnings("unchecked")
-    private void checkAuthorization(@NotNull ICommandExecutor<?> sender, @NotNull WrappedCommand command, @NotNull String label, @NotNull String[] args) {
-        Objects.requireNonNull(sender, "Sender cannot be null");
-        Objects.requireNonNull(command, "Command cannot be null");
-        Objects.requireNonNull(label, "Label cannot be null");
-        Objects.requireNonNull(args, "Args cannot be null");
-        if (authorizer.isAuthorized(sender, command)) {
+    private void execute(@NotNull ICommandExecutor<?> executor, @NotNull WrappedCommand command, @NotNull String label, @NotNull String[] args) {
+        requireNonNull(executor, "Sender cannot be null");
+        requireNonNull(command, "Command cannot be null");
+        requireNonNull(label, "Label cannot be null");
+        requireNonNull(args, "Args cannot be null");
+
+        boolean execute = true;
+        for (ICommandPreProcessor preProcessor : preProcessors) {
+            var result = preProcessor.process(executor, command);
+            if (result.equals(ProcessorResult.STOP_EXECUTION)) {
+                execute = false;
+                break;
+            }
+        }
+
+        if (execute) {
             if (command.isAsync()) {
-                runAsync(() -> finishExecution(sender, command, label, args));
+                runAsync(() -> finishExecution(executor, command, label, args));
             } else {
-                finishExecution(sender, command, label, args);
+                finishExecution(executor, command, label, args);
             }
         }
     }
@@ -222,7 +233,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
     @Nullable
     public final CommandContainer getContainerFor(@NotNull WrappedCommand command) {
-        Objects.requireNonNull(command, "WrappedCommand cannot be null");
+        requireNonNull(command, "WrappedCommand cannot be null");
         for (CommandContainer container : commands.values()) {
             if (container.getCommands().containsValue(command)) {
                 return container;
@@ -234,7 +245,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     @SuppressWarnings("unchecked")
     @Nullable
     public final <TYPE> BindingContainer<TYPE> getBindingsFor(@NotNull Class<TYPE> type) {
-        Objects.requireNonNull(type, "Type cannot be null");
+        requireNonNull(type, "Type cannot be null");
         if (bindings.containsKey(type)) {
             return (BindingContainer<TYPE>) bindings.get(type);
         }
@@ -244,12 +255,12 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     @Nullable
     @Override
     public final CommandContainer get(@NotNull String name) {
-        Objects.requireNonNull(name, "Name cannot be null");
+        requireNonNull(name, "Name cannot be null");
         return commands.get(getCommandKey(name));
     }
 
     public final String getCommandKey(@NotNull String name) {
-        Objects.requireNonNull(name, "Name cannot be null");
+        requireNonNull(name, "Name cannot be null");
         if (name.length() == 0) {
             return DEFAULT_KEY;
         }
@@ -258,14 +269,14 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
     @Override
     public final <TYPE> CommandBinder<TYPE> bind(@NotNull Class<TYPE> type) {
-        Objects.requireNonNull(type, "Type cannot be null for bind");
+        requireNonNull(type, "Type cannot be null for bind");
         return new CommandBinder<>(this, type);
     }
 
     public final <TYPE> void bindProvider(@NotNull Class<TYPE> type, @NotNull Set<Class<? extends Annotation>> annotations, @NotNull IParameterProvider<TYPE> provider) {
-        Objects.requireNonNull(type, "Type cannot be null");
-        Objects.requireNonNull(annotations, "Annotations cannot be null");
-        Objects.requireNonNull(provider, "Provider cannot be null");
+        requireNonNull(type, "Type cannot be null");
+        requireNonNull(annotations, "Annotations cannot be null");
+        requireNonNull(provider, "Provider cannot be null");
         BindingContainer<TYPE> container = getBindingsFor(type);
         if (container == null) {
             container = new BindingContainer<>(type);

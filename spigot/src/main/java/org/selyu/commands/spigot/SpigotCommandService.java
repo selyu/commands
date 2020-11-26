@@ -13,6 +13,7 @@ import org.selyu.commands.core.annotation.Sender;
 import org.selyu.commands.core.command.AbstractCommandService;
 import org.selyu.commands.core.command.WrappedCommand;
 import org.selyu.commands.core.lang.Lang;
+import org.selyu.commands.core.preprocessor.ProcessorResult;
 import org.selyu.commands.spigot.annotation.Permission;
 import org.selyu.commands.spigot.provider.CommandSenderProvider;
 import org.selyu.commands.spigot.provider.ConsoleCommandSenderProvider;
@@ -33,9 +34,9 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
         requireNonNull(plugin, "plugin");
 
         this.plugin = plugin;
-        helpService.setHelpFormatter((s, container) -> {
-            if (s.getInstance() instanceof CommandSender) {
-                CommandSender sender = (CommandSender) s.getInstance();
+        setHelpFormatter((executor, container) -> {
+            if (executor.getInstance() instanceof CommandSender) {
+                CommandSender sender = (CommandSender) executor.getInstance();
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7&m--------------------------------"));
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bHelp &7- &6/" + container.getName()));
                 for (WrappedCommand c : container.getCommands().values()) {
@@ -48,18 +49,6 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7&m--------------------------------"));
             }
         });
-
-        authorizer = (sender, command) -> {
-            for (Annotation annotation : command.getAnnotations()) {
-                if (annotation instanceof Permission) {
-                    if (!((CommandSender) sender.getInstance()).hasPermission(((Permission) annotation).value())) {
-                        sender.sendMessage(getLang().get("spigot.no_permission"));
-                        return false;
-                    }
-                }
-            }
-            return true;
-        };
     }
 
     @Override
@@ -73,12 +62,24 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
     }
 
     @Override
-    protected void bindDefaults() {
+    protected void addDefaults() {
         bind(CommandSender.class).annotatedWith(Sender.class).toProvider(new CommandSenderProvider());
         bind(Player.class).annotatedWith(Sender.class).toProvider(new PlayerSenderProvider(this));
         bind(ConsoleCommandSender.class).annotatedWith(Sender.class).toProvider(new ConsoleCommandSenderProvider(this));
 
         bind(Player.class).toProvider(new PlayerProvider(this));
+
+        addPreProcessor((executor, command) -> {
+            for (Annotation annotation : command.getAnnotations()) {
+                if (annotation instanceof Permission) {
+                    if (!((CommandSender) executor.getInstance()).hasPermission(((Permission) annotation).value())) {
+                        executor.sendMessage(getLang().get("spigot.no_permission"));
+                        return ProcessorResult.STOP_EXECUTION;
+                    }
+                }
+            }
+            return ProcessorResult.OK;
+        });
     }
 
     @NotNull
