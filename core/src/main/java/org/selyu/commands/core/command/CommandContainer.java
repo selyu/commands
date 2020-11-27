@@ -25,6 +25,9 @@ public abstract class CommandContainer {
         this.aliases = aliases;
         this.commands = commands;
         this.defaultCommand = calculateDefaultCommand();
+        if(defaultCommand == null) {
+            defaultCommandIsHelp = true;
+        }
         this.tabCompleter = new TabCompleter(this);
     }
 
