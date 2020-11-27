@@ -8,29 +8,37 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.selyu.commands.api.annotation.Sender;
-import org.selyu.commands.api.command.AbstractCommandService;
-import org.selyu.commands.api.command.WrappedCommand;
-import org.selyu.commands.spigot.lang.SpigotLang;
+import org.jetbrains.annotations.NotNull;
+import org.selyu.commands.core.annotation.Sender;
+import org.selyu.commands.core.command.AbstractCommandService;
+import org.selyu.commands.core.command.WrappedCommand;
+import org.selyu.commands.core.messages.Messages;
+import org.selyu.commands.core.preprocessor.ProcessorResult;
+import org.selyu.commands.spigot.annotation.Permission;
 import org.selyu.commands.spigot.provider.CommandSenderProvider;
 import org.selyu.commands.spigot.provider.ConsoleCommandSenderProvider;
 import org.selyu.commands.spigot.provider.PlayerProvider;
 import org.selyu.commands.spigot.provider.PlayerSenderProvider;
 
-import javax.annotation.Nonnull;
+import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Set;
+
+import static java.util.Objects.requireNonNull;
 
 public final class SpigotCommandService extends AbstractCommandService<SpigotCommandContainer> {
     private final JavaPlugin plugin;
     private final SpigotCommandRegistry registry = new SpigotCommandRegistry(this);
-    private final SpigotLang spigotLang = new SpigotLang();
 
-    public SpigotCommandService(@Nonnull JavaPlugin plugin) {
+    public SpigotCommandService(@NotNull JavaPlugin plugin) {
+        requireNonNull(plugin, "plugin");
+
         this.plugin = plugin;
-        helpService.setHelpFormatter((s, container) -> {
-            if (s.getInstance() instanceof CommandSender) {
-                CommandSender sender = (CommandSender) s.getInstance();
+
+        Messages.prefix = ChatColor.RED.toString();
+        setHelpFormatter((executor, container) -> {
+            if (executor.getInstance() instanceof CommandSender) {
+                CommandSender sender = (CommandSender) executor.getInstance();
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7&m--------------------------------"));
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bHelp &7- &6/" + container.getName()));
                 for (WrappedCommand c : container.getCommands().values()) {
@@ -46,22 +54,34 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
     }
 
     @Override
-    protected void runAsync(@Nonnull Runnable runnable) {
+    protected void runAsync(@NotNull Runnable runnable) {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
     }
 
     @Override
-    protected void bindDefaults() {
+    protected void addDefaults() {
         bind(CommandSender.class).annotatedWith(Sender.class).toProvider(new CommandSenderProvider());
-        bind(Player.class).annotatedWith(Sender.class).toProvider(new PlayerSenderProvider(this));
-        bind(ConsoleCommandSender.class).annotatedWith(Sender.class).toProvider(new ConsoleCommandSenderProvider(this));
+        bind(Player.class).annotatedWith(Sender.class).toProvider(new PlayerSenderProvider());
+        bind(ConsoleCommandSender.class).annotatedWith(Sender.class).toProvider(new ConsoleCommandSenderProvider());
 
-        bind(Player.class).toProvider(new PlayerProvider(this));
+        bind(Player.class).toProvider(new PlayerProvider());
+
+        addPreProcessor((executor, command) -> {
+            for (Annotation annotation : command.getAnnotations()) {
+                if (annotation instanceof Permission) {
+                    if (!((CommandSender) executor.getInstance()).hasPermission(((Permission) annotation).value())) {
+                        executor.sendMessage(Messages.format(SpigotMessages.noPermission));
+                        return ProcessorResult.STOP_EXECUTION;
+                    }
+                }
+            }
+            return ProcessorResult.OK;
+        });
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    protected SpigotCommandContainer createContainer(@Nonnull Object object, @Nonnull String name, @Nonnull Set<String> aliases, @Nonnull Map<String, WrappedCommand> commands) {
+    protected SpigotCommandContainer createContainer(@NotNull Object object, @NotNull String name, @NotNull Set<String> aliases, @NotNull Map<String, WrappedCommand> commands) {
         return new SpigotCommandContainer(this, object, name, aliases, commands);
     }
 
@@ -72,13 +92,7 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
         }
     }
 
-    @Override
-    @Nonnull
-    public SpigotLang getLang() {
-        return spigotLang;
-    }
-
-    @Nonnull
+    @NotNull
     JavaPlugin getPlugin() {
         return plugin;
     }

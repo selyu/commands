@@ -1,6 +1,5 @@
-package org.selyu.commands.spigot.provider;
+package org.selyu.commands.core.provider.impl;
 
-import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.selyu.commands.core.argument.CommandArg;
 import org.selyu.commands.core.provider.IParameterProvider;
@@ -9,22 +8,27 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
-public final class CommandSenderProvider implements IParameterProvider<CommandSender> {
+public final class InstanceProvider<T> implements IParameterProvider<T> {
+    private final T instance;
+
+    public InstanceProvider(T instance) {
+        this.instance = instance;
+    }
+
     @Override
     public boolean consumesArgument() {
         return false;
     }
 
-    @NotNull
     @Override
-    public CommandSender provide(@NotNull CommandArg arg, @NotNull List<? extends Annotation> annotations) throws IllegalArgumentException {
-        return (CommandSender) arg.getSender().getInstance();
+    public T provide(@NotNull CommandArg arg, @NotNull List<? extends Annotation> annotations) {
+        return instance;
     }
 
     @NotNull
     @Override
     public String argumentDescription() {
-        return "sender";
+        return instance.getClass().getSimpleName() + " (provided)";
     }
 
     @NotNull
