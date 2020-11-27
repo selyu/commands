@@ -34,6 +34,8 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
         requireNonNull(plugin, "plugin");
 
         this.plugin = plugin;
+
+        Messages.prefix = ChatColor.RED.toString();
         setHelpFormatter((executor, container) -> {
             if (executor.getInstance() instanceof CommandSender) {
                 CommandSender sender = (CommandSender) executor.getInstance();
