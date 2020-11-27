@@ -2,7 +2,7 @@ package org.selyu.commands.core.provider.impl;
 
 import org.jetbrains.annotations.NotNull;
 import org.selyu.commands.core.argument.CommandArg;
-import org.selyu.commands.core.lang.Lang;
+import org.selyu.commands.core.messages.Messages;
 import org.selyu.commands.core.provider.IParameterProvider;
 
 import java.lang.annotation.Annotation;
@@ -10,12 +10,6 @@ import java.util.Collections;
 import java.util.List;
 
 public final class DoubleProvider implements IParameterProvider<Double> {
-    private final Lang lang;
-
-    public DoubleProvider(@NotNull Lang lang) {
-        this.lang = lang;
-    }
-
     @Override
     public boolean allowNullArgument() {
         return false;
@@ -32,7 +26,7 @@ public final class DoubleProvider implements IParameterProvider<Double> {
         try {
             return Double.parseDouble(s);
         } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException(lang.get("invalid_double", s));
+            throw new IllegalArgumentException(Messages.format(Messages.Providers.invalidDouble, s));
         }
     }
 

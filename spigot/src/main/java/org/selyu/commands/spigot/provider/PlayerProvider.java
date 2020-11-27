@@ -4,20 +4,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.selyu.commands.core.argument.CommandArg;
+import org.selyu.commands.core.messages.Messages;
 import org.selyu.commands.core.provider.IParameterProvider;
 import org.selyu.commands.spigot.SpigotCommandService;
+import org.selyu.commands.spigot.SpigotMessages;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public final class PlayerProvider implements IParameterProvider<Player> {
-    private final SpigotCommandService service;
-
-    public PlayerProvider(@NotNull SpigotCommandService service) {
-        this.service = service;
-    }
-
     @NotNull
     @Override
     public Player provide(@NotNull CommandArg arg, @NotNull List<? extends Annotation> annotations) throws IllegalArgumentException {
@@ -26,7 +22,7 @@ public final class PlayerProvider implements IParameterProvider<Player> {
         if (p != null) {
             return p;
         }
-        throw new IllegalArgumentException(service.getLang().get("spigot.player_not_found", name));
+        throw new IllegalArgumentException(Messages.format(SpigotMessages.Providers.playerNotFound, name));
     }
 
     @NotNull

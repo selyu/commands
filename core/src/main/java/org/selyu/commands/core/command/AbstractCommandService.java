@@ -13,7 +13,7 @@ import org.selyu.commands.core.flag.CommandFlag;
 import org.selyu.commands.core.flag.FlagExtractor;
 import org.selyu.commands.core.help.HelpService;
 import org.selyu.commands.core.help.IHelpFormatter;
-import org.selyu.commands.core.lang.Lang;
+import org.selyu.commands.core.messages.Messages;
 import org.selyu.commands.core.modifier.ICommandModifier;
 import org.selyu.commands.core.modifier.ModifierService;
 import org.selyu.commands.core.parametric.BindingContainer;
@@ -38,7 +38,6 @@ import static java.util.Objects.requireNonNull;
 public abstract class AbstractCommandService<T extends CommandContainer> implements ICommandService {
     public static String DEFAULT_KEY = "COMMANDS_DEFAULT";
 
-    protected final Lang lang = createLang();
     protected final HelpService helpService = new HelpService(this);
     protected final CommandExtractor extractor = new CommandExtractor(this);
     protected final ProviderAssigner providerAssigner = new ProviderAssigner(this);
@@ -49,19 +48,19 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
     protected final Set<ICommandPreProcessor> preProcessors = new HashSet<>();
 
     public AbstractCommandService() {
-        BooleanProvider booleanProvider = new BooleanProvider(lang);
+        BooleanProvider booleanProvider = new BooleanProvider();
         bind(Boolean.class).toProvider(booleanProvider);
         bind(boolean.class).toProvider(booleanProvider);
 
-        DoubleProvider doubleProvider = new DoubleProvider(lang);
+        DoubleProvider doubleProvider = new DoubleProvider();
         bind(Double.class).toProvider(doubleProvider);
         bind(double.class).toProvider(doubleProvider);
 
-        IntegerProvider integerProvider = new IntegerProvider(lang);
+        IntegerProvider integerProvider = new IntegerProvider();
         bind(Integer.class).toProvider(integerProvider);
         bind(int.class).toProvider(integerProvider);
 
-        LongProvider longProvider = new LongProvider(lang);
+        LongProvider longProvider = new LongProvider();
         bind(Long.class).toProvider(longProvider);
         bind(long.class).toProvider(longProvider);
 
@@ -71,8 +70,6 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
 
         addDefaults();
     }
-
-    protected abstract Lang createLang();
 
     protected abstract void runAsync(@NotNull Runnable runnable);
 
@@ -153,18 +150,15 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
                         helpService.sendHelpFor(sender, container);
                         return true;
                     }
-                    sender.sendMessage(lang.get("unknown_sub_command", args[0], label));
+                    sender.sendMessage(Messages.format(Messages.unknownSubCommand, args[0], label));
                 } else {
-                    if (container.isDefaultCommandIsHelp()) {
-                        helpService.sendHelpFor(sender, container);
-                    } else {
-                        sender.sendMessage(lang.get("choose_sub_command", label));
-                    }
+                    // Just send help
+                    helpService.sendHelpFor(sender, container);
                 }
             }
             return true;
         } catch (Exception ex) {
-            sender.sendMessage(lang.get("exception"));
+            sender.sendMessage(Messages.exception);
             ex.printStackTrace();
         }
 
@@ -220,7 +214,7 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
                         return;
                     }
                 }
-                sender.sendMessage(lang.get("exception"));
+                sender.sendMessage(Messages.exception);
                 throw new CommandException("Failed to execute command '" + command.getName() + "' with arguments '" + CommandUtil.join(args, ' ') + " for sender " + sender.getName(), ex);
             }
         } catch (IllegalArgumentException ex) {

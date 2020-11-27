@@ -2,7 +2,7 @@ package org.selyu.commands.core.provider.impl;
 
 import org.jetbrains.annotations.NotNull;
 import org.selyu.commands.core.argument.CommandArg;
-import org.selyu.commands.core.lang.Lang;
+import org.selyu.commands.core.messages.Messages;
 import org.selyu.commands.core.provider.IParameterProvider;
 import org.selyu.commands.core.util.CommandUtil;
 
@@ -14,11 +14,9 @@ import java.util.regex.Pattern;
 public final class EnumProvider<T extends Enum<T>> implements IParameterProvider<T> {
     private static final Pattern NON_ALPHANUMERIC = Pattern.compile("[^A-Za-z0-9]");
 
-    private final Lang lang;
     private final Class<T> enumClass;
 
-    public EnumProvider(@NotNull Lang lang, @NotNull Class<T> enumClass) {
-        this.lang = lang;
+    public EnumProvider(@NotNull Class<T> enumClass) {
         this.enumClass = enumClass;
     }
 
@@ -36,7 +34,7 @@ public final class EnumProvider<T extends Enum<T>> implements IParameterProvider
                 return entry;
             }
         }
-        throw new IllegalArgumentException(lang.get("invalid_enum_value", argumentDescription(), CommandUtil.join(getSuggestions("").toArray(new String[0]), ' ')));
+        throw new IllegalArgumentException(Messages.format(Messages.Providers.invalidEnumValue, s, argumentDescription(), CommandUtil.join(getSuggestions("").toArray(new String[0]), ' ')));
     }
 
     @NotNull

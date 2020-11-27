@@ -6,7 +6,6 @@ import org.selyu.commands.core.annotation.Command;
 import org.selyu.commands.core.annotation.Modifier;
 import org.selyu.commands.core.command.CommandContainer;
 import org.selyu.commands.core.help.IHelpFormatter;
-import org.selyu.commands.core.lang.Lang;
 import org.selyu.commands.core.modifier.ICommandModifier;
 import org.selyu.commands.core.parametric.binder.CommandBinder;
 import org.selyu.commands.core.preprocessor.ICommandPreProcessor;
@@ -80,7 +79,4 @@ public interface ICommandService {
      * @param helpFormatter The new {@link IHelpFormatter} instance
      */
     void setHelpFormatter(@NotNull IHelpFormatter helpFormatter);
-
-    @NotNull
-    Lang getLang();
 }

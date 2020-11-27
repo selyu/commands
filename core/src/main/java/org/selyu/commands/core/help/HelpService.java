@@ -2,10 +2,11 @@ package org.selyu.commands.core.help;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.selyu.commands.core.command.CommandContainer;
 import org.selyu.commands.core.command.AbstractCommandService;
+import org.selyu.commands.core.command.CommandContainer;
 import org.selyu.commands.core.command.WrappedCommand;
 import org.selyu.commands.core.executor.ICommandExecutor;
+import org.selyu.commands.core.messages.Messages;
 
 @Getter
 @Setter
@@ -34,7 +35,7 @@ public final class HelpService {
     }
 
     public String getUsageMessage(CommandContainer container, WrappedCommand command) {
-        String usage = commandService.getLang().get("usage_format", container.getName()) + " ";
+        String usage = Messages.format(Messages.usageFormat, container.getName()) + " ";
         if (command.getName().length() > 0) {
             usage += command.getName() + " ";
         }

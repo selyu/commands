@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.selyu.commands.core.annotation.Sender;
 import org.selyu.commands.core.command.AbstractCommandService;
 import org.selyu.commands.core.command.WrappedCommand;
-import org.selyu.commands.core.lang.Lang;
+import org.selyu.commands.core.messages.Messages;
 import org.selyu.commands.core.preprocessor.ProcessorResult;
 import org.selyu.commands.spigot.annotation.Permission;
 import org.selyu.commands.spigot.provider.CommandSenderProvider;
@@ -52,11 +52,6 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
     }
 
     @Override
-    protected Lang createLang() {
-        return new SpigotLang();
-    }
-
-    @Override
     protected void runAsync(@NotNull Runnable runnable) {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
     }
@@ -64,16 +59,16 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
     @Override
     protected void addDefaults() {
         bind(CommandSender.class).annotatedWith(Sender.class).toProvider(new CommandSenderProvider());
-        bind(Player.class).annotatedWith(Sender.class).toProvider(new PlayerSenderProvider(this));
-        bind(ConsoleCommandSender.class).annotatedWith(Sender.class).toProvider(new ConsoleCommandSenderProvider(this));
+        bind(Player.class).annotatedWith(Sender.class).toProvider(new PlayerSenderProvider());
+        bind(ConsoleCommandSender.class).annotatedWith(Sender.class).toProvider(new ConsoleCommandSenderProvider());
 
-        bind(Player.class).toProvider(new PlayerProvider(this));
+        bind(Player.class).toProvider(new PlayerProvider());
 
         addPreProcessor((executor, command) -> {
             for (Annotation annotation : command.getAnnotations()) {
                 if (annotation instanceof Permission) {
                     if (!((CommandSender) executor.getInstance()).hasPermission(((Permission) annotation).value())) {
-                        executor.sendMessage(getLang().get("spigot.no_permission"));
+                        executor.sendMessage(Messages.format(SpigotMessages.noPermission));
                         return ProcessorResult.STOP_EXECUTION;
                     }
                 }

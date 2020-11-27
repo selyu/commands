@@ -3,32 +3,25 @@ package org.selyu.commands.spigot.provider;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.selyu.commands.core.argument.CommandArg;
+import org.selyu.commands.core.messages.Messages;
 import org.selyu.commands.core.provider.IParameterProvider;
-import org.selyu.commands.spigot.SpigotCommandService;
+import org.selyu.commands.spigot.SpigotMessages;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
 public final class ConsoleCommandSenderProvider implements IParameterProvider<ConsoleCommandSender> {
-    private final SpigotCommandService service;
-
-    public ConsoleCommandSenderProvider(@NotNull SpigotCommandService service) {
-        this.service = service;
-    }
-
     @Override
     public boolean consumesArgument() {
         return false;
     }
 
-    @Nullable
     @Override
-    public ConsoleCommandSender provide(@NotNull CommandArg arg, @NotNull List<? extends Annotation> annotations) throws IllegalArgumentException {
+    public @NotNull ConsoleCommandSender provide(@NotNull CommandArg arg, @NotNull List<? extends Annotation> annotations) throws IllegalArgumentException {
         if (arg.getSender().getInstance() instanceof Player) {
-            throw new IllegalArgumentException(service.getLang().get("spigot.console_only_command"));
+            throw new IllegalArgumentException(Messages.format(SpigotMessages.consoleOnly));
         }
         return (ConsoleCommandSender) arg.getSender().getInstance();
     }
