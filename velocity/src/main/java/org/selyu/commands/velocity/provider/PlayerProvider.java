@@ -4,7 +4,9 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.jetbrains.annotations.NotNull;
 import org.selyu.commands.core.argument.CommandArg;
+import org.selyu.commands.core.messages.Messages;
 import org.selyu.commands.core.provider.IParameterProvider;
+import org.selyu.commands.velocity.VelocityMessages;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -26,8 +28,7 @@ public final class PlayerProvider implements IParameterProvider<Player> {
         if (optionalPlayer.isPresent()) {
             return optionalPlayer.get();
         }
-
-        throw new IllegalArgumentException("Could not find player by name: " + arg.get());
+        throw new IllegalArgumentException(Messages.format(VelocityMessages.Providers.playerNotFound, arg.get()));
     }
 
     @Override

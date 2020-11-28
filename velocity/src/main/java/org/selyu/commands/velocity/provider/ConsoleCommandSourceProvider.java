@@ -3,7 +3,9 @@ package org.selyu.commands.velocity.provider;
 import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import org.jetbrains.annotations.NotNull;
 import org.selyu.commands.core.argument.CommandArg;
+import org.selyu.commands.core.messages.Messages;
 import org.selyu.commands.core.provider.IParameterProvider;
+import org.selyu.commands.velocity.VelocityMessages;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
@@ -18,7 +20,7 @@ public final class ConsoleCommandSourceProvider implements IParameterProvider<Co
     @Override
     public @NotNull ConsoleCommandSource provide(@NotNull CommandArg arg, @NotNull List<? extends Annotation> annotations) throws IllegalArgumentException {
         if (!(arg.getSender().getInstance() instanceof ConsoleCommandSource)) {
-            throw new IllegalArgumentException("Console only!");
+            throw new IllegalArgumentException(Messages.format(VelocityMessages.consoleOnly));
         }
         return (ConsoleCommandSource) arg.getSender().getInstance();
     }

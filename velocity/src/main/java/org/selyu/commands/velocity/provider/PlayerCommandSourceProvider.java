@@ -3,7 +3,9 @@ package org.selyu.commands.velocity.provider;
 import com.velocitypowered.api.proxy.Player;
 import org.jetbrains.annotations.NotNull;
 import org.selyu.commands.core.argument.CommandArg;
+import org.selyu.commands.core.messages.Messages;
 import org.selyu.commands.core.provider.IParameterProvider;
+import org.selyu.commands.velocity.VelocityMessages;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
@@ -18,7 +20,7 @@ public final class PlayerCommandSourceProvider implements IParameterProvider<Pla
     @Override
     public @NotNull Player provide(@NotNull CommandArg arg, @NotNull List<? extends Annotation> annotations) throws IllegalArgumentException {
         if (!(arg.getSender().getInstance() instanceof Player)) {
-            throw new IllegalArgumentException("Players only!");
+            throw new IllegalArgumentException(Messages.format(VelocityMessages.playerOnly));
         }
         return (Player) arg.getSender().getInstance();
     }

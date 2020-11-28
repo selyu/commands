@@ -8,11 +8,15 @@ import org.jetbrains.annotations.NotNull;
 import org.selyu.commands.core.annotation.Sender;
 import org.selyu.commands.core.command.AbstractCommandService;
 import org.selyu.commands.core.command.WrappedCommand;
+import org.selyu.commands.core.messages.Messages;
+import org.selyu.commands.core.preprocessor.ProcessorResult;
+import org.selyu.commands.velocity.annotation.Permission;
 import org.selyu.commands.velocity.provider.CommandSourceProvider;
 import org.selyu.commands.velocity.provider.ConsoleCommandSourceProvider;
 import org.selyu.commands.velocity.provider.PlayerCommandSourceProvider;
 import org.selyu.commands.velocity.provider.PlayerProvider;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,8 +29,8 @@ public final class VelocityCommandService extends AbstractCommandService<Velocit
     public VelocityCommandService(@NotNull Object plugin, @NotNull ProxyServer proxyServer) {
         this.plugin = requireNonNull(plugin, "plugin");
         this.proxyServer = requireNonNull(proxyServer, "proxyServer");
-
         addDefaults();
+        Messages.prefix = '\u00A7' + "c";
     }
 
     @Override
@@ -41,6 +45,18 @@ public final class VelocityCommandService extends AbstractCommandService<Velocit
         bind(Player.class).annotatedWith(Sender.class).toProvider(new PlayerCommandSourceProvider());
 
         bind(Player.class).toProvider(new PlayerProvider(proxyServer));
+
+        addPreProcessor((executor, command) -> {
+            for (Annotation annotation : command.getAnnotations()) {
+                if (annotation instanceof Permission) {
+                    if (!((CommandSource) executor.getInstance()).hasPermission(((Permission) annotation).value())) {
+                        executor.sendMessage(Messages.format(VelocityMessages.noPermission));
+                        return ProcessorResult.STOP_EXECUTION;
+                    }
+                }
+            }
+            return ProcessorResult.OK;
+        });
     }
 
     @Override
