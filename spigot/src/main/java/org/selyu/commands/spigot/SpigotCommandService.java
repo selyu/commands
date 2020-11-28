@@ -51,6 +51,8 @@ public final class SpigotCommandService extends AbstractCommandService<SpigotCom
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7&m--------------------------------"));
             }
         });
+
+        addDefaults();
     }
 
     @Override

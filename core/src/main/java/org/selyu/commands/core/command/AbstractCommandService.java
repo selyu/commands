@@ -67,8 +67,6 @@ public abstract class AbstractCommandService<T extends CommandContainer> impleme
         bind(String.class).toProvider(new StringProvider());
         bind(String.class).annotatedWith(Text.class).toProvider(new GreedyStringProvider());
         bind(CommandArgs.class).toProvider(new CommandArgsProvider());
-
-        addDefaults();
     }
 
     protected abstract void runAsync(@NotNull Runnable runnable);
